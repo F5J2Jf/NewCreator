@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "e4de81d3-a6c9-4045-9d90-357938efef0e",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "four_mj_2_hand_b0": {
+      "ver": "1.0.3",
+      "uuid": "0169f947-2279-4502-b184-7ad9d733c3f2",
+      "rawTextureUuid": "e4de81d3-a6c9-4045-9d90-357938efef0e",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 36,
+      "height": 53,
+      "rawWidth": 36,
+      "rawHeight": 53,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

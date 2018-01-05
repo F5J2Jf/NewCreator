@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "dd59a38d-8723-41ec-a73b-907acccfe5f9",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "QzGameAnima": {
+      "ver": "1.0.3",
+      "uuid": "099abe12-6f69-4e4e-add3-97f6a09397b0",
+      "rawTextureUuid": "dd59a38d-8723-41ec-a73b-907acccfe5f9",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -0.5,
+      "offsetY": 8.5,
+      "trimX": 2,
+      "trimY": 2,
+      "width": 507,
+      "height": 491,
+      "rawWidth": 512,
+      "rawHeight": 512,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

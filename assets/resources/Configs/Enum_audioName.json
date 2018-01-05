@@ -1,0 +1,14 @@
+{
+  "key_int": {
+    "audioName": "string"
+  },
+  "1": {
+    "audioName": "background"
+  },
+  "2": {
+    "audioName": "teshu3"
+  },
+  "3": {
+    "audioName": "btn_click"
+  }
+}
