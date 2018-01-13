@@ -1,4 +1,5 @@
-﻿#统计代码数量
+﻿
+# -*- coding: utf-8 -*- 
 import sys; 
 import os;
 import os.path;	
@@ -7,7 +8,7 @@ import sys;
 import time;
 import json; 
 
- 
+members=[u'YOYO',u'JACKY',u'Justin']
 class ModuleMvc:
 	def input_class_name(self):
 		while(1):
@@ -28,27 +29,25 @@ class ModuleMvc:
 		self.m_ctrl_cls_name=self.m_class_name + 'Ctrl'; 
 		
 		#判断路径是否已经存在
-		self.m_dir='../../assets/Script/Modules/'+self.m_class_name;
-		self.m_ctrl_lua_path=self.m_dir+'/'+self.m_ctrl_lua_name+'.ts'; 
-		if os.path.exists(self.m_ctrl_lua_path):
-			print (u'此类已存在,请确认assets/Script/Modules下的模块类');
-			self.input_class_name();
-			return False;
-		return True;
+		self.m_dir='.';
+		self.m_ctrl_lua_path=self.m_dir+'/'+self.m_ctrl_lua_name+'.ts';  
+		return True
 		
 	def show_create_files_menu(self):
 		while(1):
-			print (u'按y生成代码');
-			print (u'按n取消并返回菜单');
+			print (u'选择作者即可创建,请输入序号');
+			for i in range(len(members)):
+				print (u'序号:%d名字:%s')%(i,members[i]);
 			a = raw_input();
-			if a=='y':
-				self.create_files();
-				break;
-			if a=='n':
+			mindex=int(a)
+			if i>len(members):
+				print("滚,这都会输错");
 				self.input_class_name();
-				break;
+				return;
+			self.author=members[mindex]
+			self.time=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
+			self.create_files();
 	def create_files(self):
-		os.mkdir(self.m_dir);
 		print(u'你的控制器类名是'+self.m_ctrl_cls_name+u'文件路径是'+self.m_ctrl_lua_path); 
 		self.create_ctrl_code(); 
 		print(u'生成成功,请查看')
@@ -56,38 +55,96 @@ class ModuleMvc:
 	def create_ctrl_code(self):
 		ctrl_file=open(self.m_ctrl_lua_path, 'w');
 		ts_str=(
-			"import BaseControl from '../libs/BaseControl';\n" 
-			"//MVC编码示范,\n"
-			"const {ccclass, property} = cc._decorator;\n"
-
-			"let moduleObj : Model,\n"
-			"    viewObj : View,\n"
-			"    ctrlObj : %s;\n"
-			"//m，数据处理\n"
-			"class Model {\n"
-			"}\n"
-			"//v, 界面显示\n"
-			"class View {\n"
-
-			"}\n"
-			"moduleObj = new Model();\n"
-			"viewObj = new View();\n"
-			"//c, 控制\n"
-			"@ccclass\n"
-			"export default class %s extends BaseControl {\n"
-			"    @property(cc.Label)\n"
-			"    label: cc.Label = null;\n"
-
-			"    onLoad (){\n"
-			"        ctrlObj = this;\n"
-			"    }\n"
-
-			"    start () {\n" 
-			        
-			"    }\n"
-			"}\n"
+		    '/*\n'
+			'author: %s\n'
+			'日期:%s\n'
+			'*/\n'
+			'import BaseControl from "../../Libs/BaseCtrl";\n'
+			'import BaseView from "../../Libs/BaseView";\n'
+			'import BaseModel from "../../Libs/BaseModel";\n'
+			'import UiMgr from "../../GameMgrs/UiMgr";\n'
+			'import ModuleMgr from "../../GameMgrs/ModuleMgr";\n'
+			'\n' 
+			'//MVC模块,\n'
+			'const {ccclass, property} = cc._decorator;\n'
+			'let ctrl : LoginCtrl;\n'
+			'//模型，数据处理\n'
+			'class Model extends BaseModel{\n'
+			'	constructor()\n'
+			'	{\n'
+			'		super();\n'
+            '\n'
+			'	}\n'
+			'}\n'
+			'//视图, 界面显示或动画，在这里完成\n'
+			'class View extends BaseView{\n'
+			'	ui={\n'
+			'		//在这里声明ui\n'
+			'	};\n'
+			'	node=null;\n'
+			'	constructor(model){\n'
+			'		super(model);\n'
+			'		this.node=ctrl.node;\n'  
+			'		this.initUi();\n'
+			'	}\n'
+			'	//初始化ui\n'
+			'	initUi()\n'
+			'	{\n' 
+			'	}\n'
+			'}\n'
+			'//c, 控制\n'
+			'@ccclass\n'
+			'export default class %s extends BaseControl {\n'
+			'	//这边去声明ui组件\n'
+			'\n'	
+			'	//声明ui组件end\n'
+			'	//这是ui组件的map,将ui和控制器或试图普通变量分离\n' 
+			'\n'  
+			'\n'	
+			'	onLoad (){\n'
+			'		//创建mvc模式中模型和视图\n'
+			'		//控制器\n'
+			'		ctrl = this;\n'
+			'		//数据模型\n'
+			'		this.model = new Model();\n'
+			'		//视图\n'
+			'		this.view = new View(this.model);\n'
+			'		//引用视图的ui\n'  
+			'		this.ui=this.view.ui;\n'
+			'		//定义网络事件\n'
+			'		this.defineNetEvents();\n'
+			'		//定义全局事件\n'
+			'		this.defineGlobalEvents();\n'
+			'		//注册所有事件\n'
+			'		this.regAllEvents()\n'
+			'		//绑定ui操作\n'
+			'		this.connectUi();\n'
+			'	}\n'
+			'\n'
+			'	//定义网络事件\n'
+			'	defineNetEvents()\n'
+			'	{\n' 
+			'	}\n'
+			'	//定义全局事件\n'
+			'	defineGlobalEvents()\n'
+			'	{\n'
+			'\n'
+			'	}\n' 
+			'	//绑定操作的回调\n'
+			'	connectUi()\n'
+			'	{\n'  
+			'	}\n'
+			'	start () {\n'
+			'	}\n'
+			'	//网络事件回调begin\n' 
+			'	//end\n'
+			'	//全局事件回调begin\n'
+			'	//end\n'
+			'	//按钮或任何控件操作的回调begin\n' 
+			'	//end\n'
+			'}'
 		)
-		ts_str=ts_str%(self.m_ctrl_cls_name,self.m_ctrl_cls_name);
+		ts_str=ts_str%(self.author.encode('utf-8'),self.time,self.m_ctrl_cls_name);
 		ctrl_file.write(ts_str);
 		ctrl_file.close();
 modulemvc = ModuleMvc();

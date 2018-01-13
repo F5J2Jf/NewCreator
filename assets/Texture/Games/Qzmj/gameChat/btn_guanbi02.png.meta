@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "eee03900-4b58-4d96-8705-3eff04391c13",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "btn_guanbi02": {
+      "ver": "1.0.3",
+      "uuid": "26c838c1-8912-4200-b524-dd610aa4218f",
+      "rawTextureUuid": "eee03900-4b58-4d96-8705-3eff04391c13",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -0.5,
+      "offsetY": 2.5,
+      "trimX": 8,
+      "trimY": 6,
+      "width": 43,
+      "height": 43,
+      "rawWidth": 60,
+      "rawHeight": 60,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
