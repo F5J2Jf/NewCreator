@@ -12,6 +12,7 @@ import RoomMgr from "../../../Plat/GameMgrs/RoomMgr";
 import QzmjLogic from "../QzmjMgr/QzmjLogic";
 import UserMgr from "../../../Plat/GameMgrs/UserMgr";
 import { QzmjDef } from "../QzMjMgr/QzmjDef";
+import QzmjResMgr from "../QzmjMgr/QzmjResMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
@@ -19,7 +20,7 @@ let ctrl : QzmjMyCardsCtrl;
 //模型，数据处理
 class Model extends BaseModel{
 	mySeatId=null; 
-	myself=null;
+	player=null;
 	curOp=null;
 	enable_op=null;
 	cursel=null;
@@ -32,13 +33,13 @@ class Model extends BaseModel{
 	updateMyInfo(  ){
 		// body 
 		this.mySeatId=RoomMgr.getInstance().getMySeatId(); 
- 		this.myself=QzmjLogic.getInstance().players[this.mySeatId]
+		this.player=QzmjLogic.getInstance().players[this.mySeatId] 
 	}
  
 	clear(  ){
 		// body
 		this.curOp=null;
-		this.cursel=0; 
+		this.cursel=null; 
 		this.enable_op=false;
 	} 
 	setCurOp(msg)
@@ -52,7 +53,7 @@ class Model extends BaseModel{
  
 	disabledOp(){
 		this.enable_op=false;
-		this.cursel=0; 
+		this.cursel=null; 
 	}
     enabledOp(){
 		this.enable_op=true;
@@ -71,12 +72,13 @@ class View extends BaseView{
 	}
 	//初始化ui 
 	initUi()
-	{
+	{ 
 		this.ui.handcard=[];
 		for(var i = 0;i<14;++i)
 		{ 
-			this.ui.handcard[i]=this.node.getChildByName(`hand_majing_${i}`);
+			this.ui.handcard.push(this.node.getChildByName(`hand_majing_${i}`));
 		} 
+		this.clear(); 
 	}
 	clearMyCard(){
 		for (var i=0;i<this.ui.handcard.length;++i){ 
@@ -86,8 +88,7 @@ class View extends BaseView{
  
 	recover(  ){
 		// body
-		this.clear();
-		this.updateJin();
+		this.clear(); 
 	}
 	
 	//清除
@@ -98,52 +99,19 @@ class View extends BaseView{
 		}
 	}
  
-	//显示金
-	updateJin(){
-		// body 
- 
-	}
-
-	//显示操作
-	newOp(  ){
-		// body
-		// var msg=this.model.curOp;
-		// var op=QzmjDef.op_cfg[msg.event] 
-		// var filename='effects/' .. FqmjRoomModel.aniCfg[op];
-		// var viewseatid=RoomMgr.getInstance().getViewSeatId(msg.opseatid)
-		// var effect=this.loadCsb(filename) 
-		// var effectnode=this.ui.effectnodes[viewseatid] 
-		// effectnode:addChild(effect) 
-		// var action=this.loadAction(filename)  
-		// effect:runAction(action)
-		// action:play("show",false);
-		// var cb=function (  )
-		// 	// body
-		// 	effect:removeFromParent();
-		// end
-		// action:setFrameEventCallFunc(cb) 
-	
-	}  
-
-	showMyCard(){
-		for (var i = 0;i<this.model.myself.ui.handcard.length;++i){
-			var value=this.model.myself.ui.handcard[i];
-			var card = this.ui.handcard[i];
-			card.active=false;
-			var sign=card.getChildByName('sign');
-			//face:loadTexture(string.format('res/cocosstudio/pics/fqmj/tileface/%s.png',FqmjResMgr.cardpngs[value]),0) 
-		}
-	}
+  
 	showNewCard(){
 	}
-	updateHandCards(){
+	updateHandCards(){ 
 		for (var i = 0;i<this.ui.handcard.length;++i){
 			var card = this.ui.handcard[i];
-			var value=this.model.myself.ui.handcard[i];
-			if (value !=null){
+			var value=this.model.player.handcard[i]; 
+			if (value !=null && value !=undefined){
 				card.active=true;
-				var sign=card.getChildByName('sign');
-				//sign:loadTexture(FqmjResMgr.getInstance().getCardName(value),0)
+                var sign=card.getChildByName('sign');
+                let texture = QzmjResMgr.getInstance().getCardTextureByValue(value);
+                let frame = new cc.SpriteFrame(texture);
+				sign.getComponent(cc.Sprite).spriteFrame = frame;  
 			}
 			else
 			{
@@ -161,12 +129,12 @@ class View extends BaseView{
 	updateSel(){
 		for (var i = 0;i<this.ui.handcard.length;++i){ 
 			var card = this.ui.handcard[i];
-			var pos=card.position;
+			var pos=card.position; 
 			if (i == this.model.cursel){
-				card.setPosition(cc.p(pos.x,20));
+				card.position=cc.p(pos.x,20);
 			}
 			else{
-				card.setPosition(cc.p(pos.x,0));
+				card.position=cc.p(pos.x,0);
 			}
 		} 
 	}
@@ -195,10 +163,11 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 			onSeatChange:this.onSeatChange,  
 			onSyncData:this.onSyncData,
 			onProcess:this.onProcess,
-			onOp:this.onOp,     
-			'http.reqSettle':this.http_reqSettle,   
+			onOp:this.onOp,      
+			'http.reqRoomUsers':this.http_reqRoomUsers, 
         } 
 	}
+	
 	//定义全局事件
 	defineGlobalEvents()
 	{
@@ -217,7 +186,10 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 	//end
 	//按钮或任何控件操作的回调begin
 	//end 
-	
+	http_reqRoomUsers(msg)
+	{
+		this.model.updateMyInfo();//更新我的信息
+	}
 	onEvent(msg)
 	{
 		// body    
@@ -239,8 +211,7 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 		this.view.updateCards(this.model.enable_op) 
 	}
 	onSeatChange(msg){
-		// body
-		this.view.updateLeftCardCount();
+		// body 
 		if (this.model.mySeatId == QzmjLogic.getInstance().curseat){ 
 			this.view.updateCards(true) 
 		}
@@ -255,48 +226,19 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 			} 
 		}
 		else{
-			this.model.setCurOp(msg);
-			this.view.newOp();
-			//显示点炮
-			if (op==QzmjDef.op_hu){
-				var huinfo=QzmjLogic.getInstance().huinfo;
-				if (huinfo.hutime == QzmjDef.hutime_dianpao){ 
-					this.view.showDianPao();
-				}
-			}
+			this.model.setCurOp(msg);  
 		}
-	} 
-	updateMyPrepared(  ){
-		// body
-		this.model.updateMyPrepared();
-		this.ui.btn_prepare.active=!this.model.myPrepared; 
-	}
-	
-	onPrepare(msg){
-		var viewseatid=RoomMgr.getInstance().getViewSeatId(msg.seatid) 
-		this.ui.prepareflags[viewseatid].active=true;
-		if(msg.seatid==this.model.mySeatId){
-			this.updateMyPrepared();
-		}
-	} 
-	http_reqSettle(msg)
-	{
-
-	}
-	onProcess(msg){
-		this.view.updateLeftCardCount();
+	}   
+	onProcess(msg){ 
 		if (msg.process==QzmjDef.process_kaijin){
- 
+			this.view.updateCards();
 		}
 		else if (msg.process==QzmjDef.process_fapai){ 
-			this.view.showMyCard();
+			this.view.updateCards();
 		}
 		else if (msg.process==QzmjDef.process_ready){ 
 			this.process_ready(msg); 
-		}
-		else if (msg.process==QzmjDef.process_dingzhuang){ 
-			this.process_dingzhuang();
-		}
+		} 
 		else if (msg.process==QzmjDef.process_buhua){ 
 			this.process_buhua(msg);
 		}
@@ -312,27 +254,23 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 	}
   
  
-	bindCardTouch(){
-		var cb =function(index){ 
-			var innerfun=function(){
-				if(this.model.enable_op){
-					return;
-				}
-				if(this.model.cursel==index){
-					QzmjLogic.getInstance().playerOp(index);
-					this.model.disabledOp();
-					return;
-				}
-				this.model.cursel=index;
-				this.view.updateSel();
+	bindCardTouch(){ 
+		var touchCard=function(index){
+			if(!this.model.enable_op){
+				return;
 			}
-			return innerfun;
-		}  
-		for(var i=0;i<this.view.handcard.length;++i){  
-			var node=this.view.handcard[i];
-			var callback=cb(i); 
+			if(this.model.cursel==index){
+				QzmjLogic.getInstance().playerOp(index);
+				this.model.disabledOp();
+				return;
+			}
+			this.model.cursel=index;
+			this.view.updateSel();
+		} 
+		for(let i=0;i<this.ui.handcard.length;++i){  
+			let node=this.ui.handcard[i]; 
 			node.on(cc.Node.EventType.TOUCH_END, function (event) {
-				callback();
+				touchCard.bind(this)(i);
 			},this); 
 		}
 	} 
@@ -345,7 +283,7 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 			return;
 		}
 		this.model.disabledOp();
-		this.model.cursel=0; 
+		this.model.cursel=null; 
 		this.view.updateCards(false);
 		
 	} 

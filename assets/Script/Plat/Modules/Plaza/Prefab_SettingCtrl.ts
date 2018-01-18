@@ -112,20 +112,8 @@ export default class Prefab_SettingCtrl extends BaseControl {
 		//创建mvc模式中模型和视图
 		//控制器
 		ctrl = this;
-		//数据模型
-		this.model = new Model();
-		//视图
-		this.view = new View(this.model);
-		//引用视图的ui
-		this.ui=this.view.ui;
-		//定义网络事件
-		this.defineNetEvents();
-		//定义全局事件
-		this.defineGlobalEvents();
-		//注册所有事件
-		this.regAllEvents()
-		//绑定ui操作
-		this.connectUi();
+		//初始化mvc
+		this.initMvc(Model,View);
 	}
 
 	//定义网络事件

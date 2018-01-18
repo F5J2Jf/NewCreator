@@ -1,6 +1,7 @@
 import GameNet from "../NetCenter/GameNet";
 import NetNotify from "../NetCenter/NetNotify";
 import LogMgr from "./LogMgr";
+import UserMgr from "./UserMgr";
 
 enum G_UiType
 {
@@ -93,6 +94,28 @@ export default class UiMgr{
             if(!isNoGray) node.color = cc.Color.GRAY;
         }
         node['_isTouchEnabledEx'] = isEnable;
+    }
+
+    /**
+     * @param targetNode 需要替换头像的节点
+     * @param headID 头像请求的id（如果没有headUrl，则使用id去获取服务器头像）
+     * @param headUrl 头像请求路径(如果有，优先显示)
+     * 动态加载头像的释放工作待做
+     */
+    public setUserHead (targetNode:cc.Node, headID:number, headUrl?:string){
+        if(!headUrl) headUrl = UserMgr.getInstance().getHeadPng(headID);
+        cc.loader.load(headUrl, (err, assets)=>{
+            if(err){
+                cc.error(err)
+            }else{
+                let w = targetNode.width,
+                    h = targetNode.height,
+                    spriteFrame = new cc.SpriteFrame(assets);
+                targetNode.getComponent(cc.Sprite).spriteFrame = spriteFrame;
+                targetNode.width = w;
+                targetNode.height = h;
+            }
+        })
     }
 
     bindText(obj,callback,opname)

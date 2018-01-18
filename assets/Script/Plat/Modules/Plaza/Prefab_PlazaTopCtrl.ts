@@ -6,37 +6,27 @@ import BaseControl from "../../Libs/BaseCtrl";
 import BaseView from "../../Libs/BaseView";
 import BaseModel from "../../Libs/BaseModel";
 import RoomMgr from "../../GameMgrs/RoomMgr";
+import FrameMgr from "../../GameMgrs/FrameMgr";
+import Prefab_shopCtrl from "../Shop/Prefab_shopCtrl";
+import UserMgr from "../../GameMgrs/UserMgr";
+import UiMgr from "../../GameMgrs/UiMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
 let ctrl : NodeTopCtrl;
 //模型，数据处理
-class Model extends BaseModel{
-    private _lv:number = null                       //等级
-    private _name:string = null                     //名字
-    private _leftMoney:number = null                //左边金钱
-    private _rightMoney:number = null               //右边金钱
-	constructor()
+class Model extends BaseModel{ 
+    myinfo=null;
+    constructor()
 	{
 		super();
-        //test================
-        this._lv = 999;
-        this._name = 'testName';
-        this._leftMoney = 989999999;
-        this._rightMoney = 989999999;
-    }
-    
-    public getCurLv (){
-        return this._lv
-    }
-    public getName(){
-        return this._name
-    }
-    public getLeftMoney(){
-        return this._leftMoney
-    }
-    public getRightMoney(){
-        return this._rightMoney
+        //在这边去获取数据层的数据
+        this.myinfo=UserMgr.getInstance().getMyInfo();
+        console.log("我的数据是",this.myinfo)
+    } 
+    updateMyInfo()
+    {
+        this.myinfo=UserMgr.getInstance().getMyInfo();
     }
 }
 //视图, 界面显示或动画，在这里完成
@@ -46,8 +36,8 @@ class View extends BaseView{
         sprite_head : null,                 //头像图片
         lab_lv : null,                      //等级
         lab_name : null,                    //名字
-        lab_leftMoney : null,               //左边金钱
-        lab_rightMoney : null,              //右边金钱
+        lab_coin : null,               //左边金钱
+        lab_gold : null,              //右边金钱
 	};
 	constructor(model){
 		super(model);
@@ -60,29 +50,36 @@ class View extends BaseView{
 		this.ui.sprite_head = ctrl.sprite_head;
 		this.ui.lab_lv = ctrl.lab_lv;
 		this.ui.lab_name = ctrl.lab_name;
-		this.ui.lab_leftMoney = ctrl.lab_leftMoney;
-		this.ui.lab_rightMoney = ctrl.lab_rightMoney;
+		this.ui.lab_coin = ctrl.lab_coin;
+        this.ui.lab_gold = ctrl.lab_gold;
     }
-    
+    updateMyInfo()
+    {       
+        this.updateLv();
+        this.updateName();
+        this.updateCoin();
+        this.updateGold();
+        this.updateHead();
+    }
     //更新头像图片
-    public setHead (toSprite:cc.SpriteFrame){
-        this.ui.sprite_head.spriteFrame = toSprite; 
+    public updateHead (){
+        UiMgr.getInstance().setUserHead(this.ui.sprite_head.node, this.model.myinfo.headid, this.model.myinfo.headurl); 
     }
     //等级
     public updateLv(){
-        this.ui.lab_lv.string = this.model.getCurLv();
+        this.ui.lab_lv.string = this.model.myinfo.lv
     }
     //名字
     public updateName(){
-        this.ui.lab_name.string = this.model.getName();
+        this.ui.lab_name.string = this.model.myinfo.nickname
     }
     //左边金钱
-    public updateLeftMoney(){
-        this.ui.lab_leftMoney.string = this.model.getLeftMoney();
+    public updateCoin(){
+        this.ui.lab_coin.string = this.model.myinfo.coin;
     }
     //右边金钱
-    public updateRightMoney(){
-        this.ui.lab_rightMoney.string = this.model.getRightMoney();
+    public updateGold(){
+        this.ui.lab_gold.string = this.model.myinfo.gold;
     }
 }
 //c, 控制
@@ -111,11 +108,12 @@ export default class NodeTopCtrl extends BaseControl {
     lab_lv:cc.Label = null;
 
     @property(cc.Label)
-	lab_leftMoney:cc.Label = null;
+	lab_coin:cc.Label = null;
 	
 	@property(cc.Label)
-    lab_rightMoney:cc.Label = null;
-	
+    lab_gold:cc.Label = null;
+    
+    
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
 
@@ -124,30 +122,25 @@ export default class NodeTopCtrl extends BaseControl {
 		//创建mvc模式中模型和视图
 		//控制器
 		ctrl = this;
-		//数据模型
-		this.model = new Model();
-		//视图
-		this.view = new View(this.model);
-		//引用视图的ui
-		this.ui=this.view.ui;
-		//定义网络事件
-		this.defineNetEvents();
-		//定义全局事件
-		this.defineGlobalEvents();
-		//注册所有事件
-		this.regAllEvents()
-		//绑定ui操作
-		this.connectUi();
+		//初始化mvc
+		this.initMvc(Model,View);
 	}
 
 	//定义网络事件
 	defineNetEvents()
 	{
+        this.n_events = {
+            'http.reqMyInfo' : this.http_reqMyInfo,
+            'http.reqGetRelief':this.http_reqGetRelief,
+        }
 	}
 	//定义全局事件
 	defineGlobalEvents()
 	{
-
+        //这什么鬼
+        let chipName = 'chip1';
+        let poolName = '_pool_'+chipName;
+        this[poolName] = new cc.NodePool(poolName)
 	}
 	//绑定操作的回调
 	connectUi()
@@ -160,36 +153,46 @@ export default class NodeTopCtrl extends BaseControl {
 		this.connect(G_UiType.image,this.node_clickLeftMoney,this._onclick_leftMoney,"左边金钱");
 		this.connect(G_UiType.image,this.node_clickRightMoney,this._onclick_rightMoney,"右边金钱");
 	}
-	start () {
-        this.view.updateLv();
-        this.view.updateName();
-        this.view.updateLeftMoney();
-        this.view.updateRightMoney();
+	start () { 
 	}
-	//网络事件回调begin
+    //网络事件回调begin
+
+    //玩家信息更新
+    private http_reqMyInfo (msg){
+        this.model.updateMyInfo();
+        this.view.updateMyInfo();
+    }
+    private http_reqGetRelief(msg)
+    {
+        this.model.updateMyInfo();
+        this.view.updateMyInfo();
+    }
 	//end
 	//全局事件回调begin
 	//end
 	//按钮或任何控件操作的回调begin
-	private btn_notice_cb (node,event){
-		console.log('btn_notice_cb')
-		RoomMgr.getInstance().reqRoomVerify();
+	private btn_notice_cb (node,event){ 
+		//RoomMgr.getInstance().reqRoomVerify();
 	}
-	private btn_setting_cb (node,event){
-		console.log('btn_setting_cb')
-		this.start_sub_module(G_MODULE.PlazaSetting);
+	private btn_setting_cb (node,event){ 
+        this.start_sub_module(G_MODULE.PlazaSetting); 
 	}
-	private btn_share_cb (node,event){
-		console.log('btn_share_cb')
+	private btn_share_cb (node,event){ 
+        this.start_sub_module(G_MODULE.Shared);
     }
-    private _onclick_head (node,event){
-		console.log('_onclick_head')
+    private _onclick_head (node,event){ 
+        this.start_sub_module(G_MODULE.PlayerDetail);
     }
-    private _onclick_leftMoney (node,event){
-		console.log('_onclick_leftMoney')
+    private _onclick_leftMoney (node,event){ 
+        this.start_sub_module(G_MODULE.Shop, (uiComp:Prefab_shopCtrl)=>{
+            uiComp.buyCoin();
+        });
     }
     private _onclick_rightMoney (node,event){
-		console.log('_onclick_rightMoney')
+        console.log('_onclick_rightMoney')
+        this.start_sub_module(G_MODULE.Shop, (uiComp:Prefab_shopCtrl)=>{
+            uiComp.buyGold();
+        });
 	}
 	//end
 }

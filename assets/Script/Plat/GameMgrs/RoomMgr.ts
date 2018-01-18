@@ -234,7 +234,7 @@ export default class RoomMgr extends BaseMgr{
         this.rid=msg.rid;
         this.reqRoomUsers();
     }
-    prepare()
+    reqPrepare()
     {
         // body 
         this.send_msg('http.reqPrepare');
@@ -242,14 +242,14 @@ export default class RoomMgr extends BaseMgr{
     onEnterRoom(msg) 
     {
         let uid=msg.user;
-        this.users[msg.seatid]=uid   
-        UserMgr.getInstance().reqUsers({uid});
+        this.users[msg.seatid]=uid     
+        UserMgr.getInstance().reqUsers([uid]);
     }
     onReEnterRoom(msg)
     {
         let uid=msg.user;
-        this.users[msg.seatid]=uid   
-        UserMgr.getInstance().reqUsers({uid});
+        this.users[msg.seatid]=uid
+        UserMgr.getInstance().reqUsers([uid]);
     }
 
     onLeaveRoom(msg)
@@ -265,8 +265,7 @@ export default class RoomMgr extends BaseMgr{
         this.preparemap={};
         this.gameid=null;
         var uids=[]
-        
-        console.log("typeof(msg)",typeof(msg))
+         
         for(var i=0;i<msg.users.length;++i)
         {
             var user=msg.users[i] 
@@ -274,6 +273,7 @@ export default class RoomMgr extends BaseMgr{
             this.preparemap[user.seatid]=user.prepared==1;
             uids.push(user.id)
         }   
+        console.log('updateRoomUsers=',this.preparemap)
         // 设置我的seatid
         var myuid= LoginMgr.getInstance().getUid() 
         for(var logicseatid in this.users)
@@ -281,7 +281,7 @@ export default class RoomMgr extends BaseMgr{
             var  uid = this.users[logicseatid] 
             if (uid && myuid== uid )  
             {
-                this.myseatid=logicseatid;
+                this.myseatid=parseInt(logicseatid); 
                 break;
             } 
         }
@@ -305,16 +305,16 @@ export default class RoomMgr extends BaseMgr{
     } 
     
     getLogicSeatId(target_seatid)
-    {
-        let logicseatid = (this.myseatid+target_seatid)%4;
-        
+    {  
+        let logicseatid = (target_seatid + this.myseatid)%4;
+         
         return logicseatid;
     }
 
     getViewSeatId(logicSeatId)
     {
         // body
-        let viewseatid = (logicSeatId-this.myseatid+4)%4;
+        let viewseatid = (logicSeatId-this.myseatid+4)%4; 
         return viewseatid;
     }
 
@@ -374,7 +374,7 @@ export default class RoomMgr extends BaseMgr{
     http_reqRoomEntry(msg)
     {
         //获得web服务器上房间分配后,就进入pomelo服务器 
-        this.enterRoom();
+        this.rid=msg.rid; 
     }
     reEnterRoom()
     {
@@ -388,8 +388,7 @@ export default class RoomMgr extends BaseMgr{
     }
     
     connector_entryHandler_enterRoom(msg)
-    {
-        this.rid=msg.rid;
+    { 
         this.reqRoomUsers();
     }
     http_reqRoomUsers(msg)

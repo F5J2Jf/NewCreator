@@ -95,7 +95,7 @@ QzmjDef.hutype_dandiao=8;//单钓
 
  
 //可以吃的目标增量
-QzmjDef.chiarr=[[1,2][-1,1],[-2,-1]];
+QzmjDef.chiarr=[[1,2],[-1,1],[-2,-1]];
 
 export const QzmjDef=QzmjDef;
  

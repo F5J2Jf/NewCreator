@@ -2,6 +2,9 @@
 import BaseMgr from "../Libs/BaseMgr";
 import RoomMgr from "./RoomMgr";
 import UserMgr from "./UserMgr";
+import FrameMgr from "./FrameMgr";
+import BetMgr from "./BetMgr";
+import Prefab_shopCtrl from "../Modules/Shop/Prefab_shopCtrl";
 
 /**
  * gfun
@@ -28,6 +31,7 @@ export default class VerifyMgr extends BaseMgr{
     }
 
     http_reqMyRoomState(msg) {
+        console.log("http_reqMyRoomState msg=",msg)
         this.unsettled=msg.unsettled;
         if(this.unsettled == 1){
             this.showRecoverRoom();
@@ -38,26 +42,27 @@ export default class VerifyMgr extends BaseMgr{
 
     showRecoverRoom(){
         // body 
-        let okcb = function(){
+        let okcb = function(){ 
+            console.log("调用了 回调")
             if(this.unsettled !=1){
-                // gfun.Warrning("游戏已结束")
+                FrameMgr.getInstance().showMsgBox("游戏已经结束"); 
                 return
             }
             RoomMgr.getInstance().reqRoomRecover();
         }
-        // gfun.MsgDlg("你有游戏在进行,点击确定恢复游戏!",okcb);
+        FrameMgr.getInstance().showDialog("你有游戏在进行,点击确定恢复游戏!",okcb.bind(this)) 
     }
     showUndispandRoom(){
         // body 
         let okcb = function(){
             if(this.unsettled !=2){
-                // gfun.Warrning("游戏已解散")
+                FrameMgr.getInstance().showMsgBox("游戏已解散");  
                 return;
             }
             RoomMgr.getInstance().reqEnterMyFangKaRoom();
         }
 
-        // gfun.MsgDlg("你有房间未解散,点击确定进入!",okcb);
+        FrameMgr.getInstance().showDialog("你有房间未解散,点击确定进入!",okcb.bind(this))  
     } 
 
     checkUnSettled(){
@@ -67,24 +72,26 @@ export default class VerifyMgr extends BaseMgr{
         }
         return false;
     }
-    
-    checkCoin(gameid,bettype){
+    //判断金币是否足够
+    checkCoin(){
+        //判断是否有未恢复的游戏
         if(this.checkUnSettled()){
             return false
-        }
-        
-        let myinfo=UserMgr.getInstance().myinfo   
-        // let betcfg=Bet.getInstance().getBetById(gameid,bettype) 
-        let betcfg:any = null;
-
-        if(myinfo.coin<betcfg.leastcoin){
-            //如果金钱不够就去领取
-            if(myinfo.getcoin>0){
-                // this.start_sub_module(platmodule.getcoin)
+        } 
+        let myinfo=UserMgr.getInstance().getMyInfo();   
+        let jbcCfg=BetMgr.getInstance().getJbcCfg();
+        var baseInfo=jbcCfg['base'] 
+        if(myinfo.coin<baseInfo.leastcoin){ 
+            //金币不足
+            if(myinfo.relief>0){
+                //启用救济金
+                this.start_sub_module(G_MODULE.ReliefMoney)  
             }else{
-                //打开购买游戏豆界面
-                // let ctrl=this.start_sub_module(platmodule.recharge)
-                // ctrl.initShop(0)
+                //打开购买游戏豆界面 
+                this.start_sub_module(G_MODULE.Shop, (uiComp:Prefab_shopCtrl)=>{
+                    uiComp.buyCoin();
+                });
+   
             }
             return false;
         }

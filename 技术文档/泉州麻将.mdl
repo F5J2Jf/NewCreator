@@ -93,7 +93,29 @@
 	global     	TRUE
 	subsystem  	"Component View"
 	quidu      	"5A506EBD0277"
-	logical_models 	(list unit_reference_list)
+	logical_models 	(list unit_reference_list
+	    (object Class "QzmjCardPoolCtrl"
+		quid       	"5A5C59A90348")
+	    (object Class "QzmjDepositCtrl"
+		quid       	"5A5C59C40207")
+	    (object Class "QzmjDiceCtrl"
+		quid       	"5A5C59E60292")
+	    (object Class "QzmjDoorCardCtrl"
+		quid       	"5A5C5A0B0104")
+	    (object Class "QzmjHandCardCtrl"
+		quid       	"5A5C5A1703B4")
+	    (object Class "QzmjMjEventCtrl"
+		quid       	"5A5C5C1A01B2")
+	    (object Class "QzmjMyCardsCtrl"
+		quid       	"5A5C5C3300D1")
+	    (object Class "QzmjRoomCtrl"
+		quid       	"5A5C5C710087")
+	    (object Class "QzmjRoundCtrl"
+		quid       	"5A5C5C8902C2")
+	    (object Class "QzmjSeatCtrl"
+		quid       	"5A5C5C9E026C")
+	    (object Class "QzmjSettleCardCtrl"
+		quid       	"5A5C5CB3010F"))
 	statemachine 	(object State_Machine "State/Activity Model"
 	    quid       	"5A5714ED0133"
 	    states     	(list States
@@ -1984,7 +2006,645 @@
 		max_width  	21600
 		origin_x   	375
 		origin_y   	0
-		items      	(list diagram_item_list))))
+		items      	(list diagram_item_list
+		    (object ClassView "Class" "Logical View::QzmjCardPoolCtrl" @80
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(663, 550)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@80
+			    location   	(521, 468)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	284
+			    justify    	0
+			    label      	"QzmjCardPoolCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C59A90348"
+			width      	302
+			height     	192
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @81
+			location   	(513, 275)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@81
+			    location   	(375, 215)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"牌池控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @82
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@80
+			supplier   	@81
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjDepositCtrl" @83
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1381, 538)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@83
+			    location   	(1256, 456)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	250
+			    justify    	0
+			    label      	"QzmjDepositCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C59C40207"
+			width      	268
+			height     	192
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @84
+			location   	(1213, 253)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@84
+			    location   	(1075, 193)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"托管控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @85
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@83
+			supplier   	@84
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjDiceCtrl" @86
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2193, 537)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@86
+			    location   	(2000, 483)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	386
+			    justify    	0
+			    label      	"QzmjDiceCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C59E60292"
+			width      	404
+			height     	136
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @87
+			location   	(2093, 219)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@87
+			    location   	(1955, 159)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"骰子控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @88
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@86
+			supplier   	@87
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjDoorCardCtrl" @89
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(547, 1059)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@89
+			    location   	(402, 977)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	290
+			    justify    	0
+			    label      	"QzmjDoorCardCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5A0B0104"
+			width      	308
+			height     	192
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @90
+			location   	(403, 822)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@90
+			    location   	(265, 762)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"门前牌控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @91
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@89
+			supplier   	@90
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjHandCardCtrl" @92
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1331, 1044)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@92
+			    location   	(1186, 962)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	290
+			    justify    	0
+			    label      	"QzmjHandCardCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5A1703B4"
+			width      	308
+			height     	192
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @93
+			location   	(1106, 822)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@93
+			    location   	(968, 762)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"其他人手牌控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @94
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@92
+			supplier   	@93
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjMjEventCtrl" @95
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2040, 1169)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@95
+			    location   	(1903, 1087)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	274
+			    justify    	0
+			    label      	"QzmjMjEventCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5C1A01B2"
+			width      	292
+			height     	192
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @96
+			location   	(1837, 850)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@96
+			    location   	(1699, 790)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"事件询问控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @97
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@95
+			supplier   	@96
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjMyCardsCtrl" @98
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2611, 1172)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@98
+			    location   	(2471, 1090)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	280
+			    justify    	0
+			    label      	"QzmjMyCardsCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5C3300D1"
+			width      	298
+			height     	192
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @99
+			location   	(2456, 815)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@99
+			    location   	(2318, 755)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"我自己的手牌控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @100
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@98
+			supplier   	@99
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjRoomCtrl" @101
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(569, 1553)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@101
+			    location   	(362, 1499)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	414
+			    justify    	0
+			    label      	"QzmjRoomCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5C710087"
+			width      	432
+			height     	136
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @102
+			location   	(313, 1309)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@102
+			    location   	(175, 1249)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"房间控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @103
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@101
+			supplier   	@102
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjRoundCtrl" @104
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1319, 1550)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@104
+			    location   	(1105, 1496)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	428
+			    justify    	0
+			    label      	"QzmjRoundCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5C8902C2"
+			width      	446
+			height     	136
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @105
+			location   	(1066, 1325)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@105
+			    location   	(928, 1265)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"东南西北控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @106
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@104
+			supplier   	@105
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjSeatCtrl" @107
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2026, 1672)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@107
+			    location   	(1838, 1618)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	376
+			    justify    	0
+			    label      	"QzmjSeatCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5C9E026C"
+			width      	394
+			height     	136
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @108
+			location   	(1888, 1434)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@108
+			    location   	(1750, 1374)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"座位控制器")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @109
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@107
+			supplier   	@108
+			line_style 	0)
+		    (object ClassView "Class" "Logical View::QzmjSettleCardCtrl" @110
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2688, 1709)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@110
+			    location   	(2543, 1627)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	290
+			    justify    	0
+			    label      	"QzmjSettleCardCtrl")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5A5C5CB3010F"
+			width      	308
+			height     	192
+			annotation 	8
+			autoResize 	TRUE)
+		    (object NoteView @111
+			location   	(2515, 1422)
+			font       	(object Font
+			    size       	12
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@111
+			    location   	(2377, 1362)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	240
+			    label      	"结算时候每个玩家牌都挺着")
+			line_color 	3342489
+			fill_color 	13434879
+			width      	300
+			height     	132)
+		    (object AttachView "" @112
+			stereotype 	TRUE
+			line_color 	3342489
+			client     	@110
+			supplier   	@111
+			line_style 	0)))))
     root_subsystem 	(object SubSystem "Component View"
 	quid       	"5A506EBD0277"
 	physical_models 	(list unit_reference_list)

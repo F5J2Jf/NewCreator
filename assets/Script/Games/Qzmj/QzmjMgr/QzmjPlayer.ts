@@ -1,5 +1,12 @@
 import { QzmjDef } from "./QzmjDef";
-
+import RoomMgr from "../../../Plat/GameMgrs/RoomMgr";
+Array.prototype.remove=function(index){
+ 
+    for(var j = index;j <this.length-1;j++){ 
+        this[j]=this[j+1]; 
+    } 
+    this.length = this.length-1;
+}
 Array.prototype.insert = function (index, item) {  
 	this.splice(index, 0, item);  
 };    
@@ -86,7 +93,7 @@ export default class QzmjPlayer
 	} 
 	removeCardFromPool()
 	{
-		this.cardpool.slice(this.cardpool.length-1,1);
+		this.cardpool.remove(this.cardpool.length-1);
 	} 
 
 	getChiCards(index)
@@ -110,14 +117,14 @@ export default class QzmjPlayer
 	pushChi(index,cards) 
 	{
 		var chicards=cards;
-	    chicards.insert(index+1,this.logic.curcard);
+	    chicards.insert(index,this.logic.curcard);
 		var opinfo={
 			'op':QzmjDef.op_chi,
 			'value':chicards,
 		}
 		this.opcards.push(opinfo); 
 	} 
-	QzmjPlayer:pushPeng(card)
+	pushPeng(card)
 	{
 		// body
 		var opinfo={
@@ -163,14 +170,14 @@ export default class QzmjPlayer
 				var value=this.handcard[i];
 				if (value==card)
 				{ 
-					this.handcard.slice(i,1);
+					this.handcard.remove(i);
 					break;
 				}  
 			} 
 		}
 		else
 		{ 
-			this.handcard.slice(0,1);
+			this.handcard.remove(0);
 		}
 	} 
 	init(seatid,logic)
@@ -209,7 +216,7 @@ export default class QzmjPlayer
 			{
 				if (this.handcard[j] == huapaiarr[i]){
 
-					this.handcard.slice(j,1)
+					this.handcard.remove(j)
 					break;
 				}  
 			}  
@@ -255,11 +262,11 @@ export default class QzmjPlayer
 		// body
 		var cardsCanChi=[];
 		var curcard=this.logic.curcard;
-		for(var index in QzmjDef.chiarr)
+		for(let index=0;index <QzmjDef.chiarr.length;++index)
 		{
 			var arr=QzmjDef.chiarr[index];
-			var card1=curcard+arr[1];
-			var card2=curcard+arr[2];
+			var card1=curcard+arr[0];
+			var card2=curcard+arr[1]; 
 			if	(this.findCard(card1) && this.findCard(card2))
 			{ 
 				var cards=[card1,card2]

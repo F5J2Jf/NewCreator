@@ -1,0 +1,29 @@
+{
+	"gold":
+	[
+		{"id":1,"name":"60","price":6,"amount":60},
+		{"id":2,"name":"190","price":18,"amount":190},
+		{"id":3,"name":"320","price":30,"amount":320},
+		{"id":4,"name":"730","price":68,"amount":730},
+		{"id":5,"name":"1400","price":128,"amount":1400},
+		{"id":6,"name":"1900","price":168,"amount":1900},
+		{"id":7,"name":"3400","price":298,"amount":3400},
+		{"id":8,"name":"7200","price":628,"amount":7200}
+	],
+	"coin":
+	[
+		{"id":1,"name":"2.4万豆","price":20,"amount":24000},
+		{"id":2,"name":"6万豆","price":50,"amount":60000},
+		{"id":3,"name":"18.5万豆","price":150,"amount":185000},
+		{"id":4,"name":"38万豆","price":300,"amount":380000},
+		{"id":5,"name":"65万豆","price":500,"amount":650000},
+		{"id":6,"name":"132万豆","price":1000,"amount":1320000},
+		{"id":7,"name":"405万豆","price":3000,"amount":4050000},
+		{"id":8,"name":"700万豆","price":5000,"amount":7000000}
+	],
+	"fangka":
+	[
+		{"id":1,"name":"30张","price":90,"amount":30},
+		{"id":2,"name":"100张","price":300,"amount":100}
+	]
+}

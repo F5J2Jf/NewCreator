@@ -6,6 +6,8 @@ import BaseControl from "../../Libs/BaseCtrl";
 import BaseView from "../../Libs/BaseView";
 import BaseModel from "../../Libs/BaseModel";
 import RoomMgr from "../../GameMgrs/RoomMgr";
+import VerifyMgr from "../../GameMgrs/VerifyMgr";
+import ModuleMgr from "../../GameMgrs/ModuleMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
@@ -38,14 +40,20 @@ class View extends BaseView{
 @ccclass
 export default class NodeRightCtrl extends BaseControl {
 	//这边去声明ui组件
-    @property(cc.Node)
-    node_quanzhou1:cc.Node = null;
+    @property({
+		tooltip : "创建房间按钮",
+		type : cc.Node
+	})
+    CreateRoom:cc.Node = null;
 
     @property(cc.Node)
     node_quanzhou2:cc.Node = null;
 
-    @property(cc.Node)
-    node_quanzhou3:cc.Node = null;
+    @property({
+		tooltip : "加入房间按钮",
+		type : cc.Node
+	})
+    JoinRoomBtn : cc.Node = null;
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
     
@@ -53,25 +61,13 @@ export default class NodeRightCtrl extends BaseControl {
 		//创建mvc模式中模型和视图
 		//控制器
 		ctrl = this;
-		//数据模型
-		this.model = new Model();
-		//视图
-		this.view = new View(this.model);
-		//引用视图的ui
-		this.ui=this.view.ui;
-		//定义网络事件
-		this.defineNetEvents();
-		//定义全局事件
-		this.defineGlobalEvents();
-		//注册所有事件
-		this.regAllEvents()
-		//绑定ui操作
-		this.connectUi();
+		//初始化mvc
+		this.initMvc(Model,View);
 	}
 
 	//定义网络事件
 	defineNetEvents()
-	{
+	{ 
 	}
 	//定义全局事件
 	defineGlobalEvents()
@@ -81,9 +77,9 @@ export default class NodeRightCtrl extends BaseControl {
 	//绑定操作的回调
 	connectUi()
 	{
-        this.connect(G_UiType.image,this.node_quanzhou1,this.btn_quickstart_cb,'快速开始1');
+        this.connect(G_UiType.image,this.CreateRoom,this.CreateRoom_cb,'创建房间');
         this.connect(G_UiType.image,this.node_quanzhou2,this.btn_quickstart_cb,'快速开始2');
-        this.connect(G_UiType.image,this.node_quanzhou3,this.btn_quickstart_cb,'快速开始3');
+        this.connect(G_UiType.image,this.JoinRoomBtn,this.JoinRoomBtn_cb,'加入房间');
 	}
 	start () {
 	}
@@ -94,8 +90,22 @@ export default class NodeRightCtrl extends BaseControl {
 	//按钮或任何控件操作的回调begin
 	btn_quickstart_cb()
 	{
-		//这边直接GameLoadMgr
-		this.start_module(G_MODULE.LoadingGame) 
+		//在本地先判断下是否有足够金币加入金币场
+		var ret=VerifyMgr.getInstance().checkCoin();
+		if(!ret)
+		{
+			return;
+		}
+		//在这边验证加入
+		RoomMgr.getInstance().reqRoomVerify();
+	}
+
+	private JoinRoomBtn_cb () : void {
+		this.start_sub_module(G_MODULE.joinRoom);
+	}
+
+	private CreateRoom_cb () : void {
+		this.start_sub_module(G_MODULE.createRoom);
 	}
 	//end
 }

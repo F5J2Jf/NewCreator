@@ -1,16 +1,14 @@
 /*
 author: Justin
-日期:2018-01-12 18:52:26
+日期:2018-01-13 16:32:58
 */
-import BaseControl from "../../Libs/BaseCtrl";
+import BaseCtrl from "../../Libs/BaseCtrl";
 import BaseView from "../../Libs/BaseView";
 import BaseModel from "../../Libs/BaseModel";
-import UiMgr from "../../GameMgrs/UiMgr";
-import ModuleMgr from "../../GameMgrs/ModuleMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
-let ctrl : LoginCtrl;
+let ctrl : Prefab_CreateRoomCtrl;
 //模型，数据处理
 class Model extends BaseModel{
 	constructor()
@@ -37,7 +35,7 @@ class View extends BaseView{
 }
 //c, 控制
 @ccclass
-export default class Prefab_CreateRoomCtrl extends BaseControl {
+export default class Prefab_CreateRoomCtrl extends BaseCtrl {
 	//这边去声明ui组件
 
 	//声明ui组件end
@@ -49,19 +47,7 @@ export default class Prefab_CreateRoomCtrl extends BaseControl {
 		//控制器
 		ctrl = this;
 		//数据模型
-		this.model = new Model();
-		//视图
-		this.view = new View(this.model);
-		//引用视图的ui
-		this.ui=this.view.ui;
-		//定义网络事件
-		this.defineNetEvents();
-		//定义全局事件
-		this.defineGlobalEvents();
-		//注册所有事件
-		this.regAllEvents()
-		//绑定ui操作
-		this.connectUi();
+		this.initMvc(Model,View);
 	}
 
 	//定义网络事件

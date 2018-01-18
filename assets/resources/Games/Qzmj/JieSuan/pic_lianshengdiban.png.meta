@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "d63dc6bb-4bb6-4280-8c82-b2a055fd3a81",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "pic_lianshengdiban": {
+      "ver": "1.0.3",
+      "uuid": "8dd92dcc-1820-4214-a9ca-8b52efafd8a4",
+      "rawTextureUuid": "d63dc6bb-4bb6-4280-8c82-b2a055fd3a81",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 109,
+      "height": 51,
+      "rawWidth": 109,
+      "rawHeight": 51,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

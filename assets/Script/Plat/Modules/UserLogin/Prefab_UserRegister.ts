@@ -1,13 +1,15 @@
 //注册页面
 import BaseCtrl from "../../Libs/BaseCtrl";
 import LoginMgr from "../../GameMgrs/LoginMgr";
+import BaseView from "../../Libs/BaseView";
+import BaseModel from "../../Libs/BaseModel";
 
 //预制体脚本示例
 const {ccclass, property} = cc._decorator;
 
 let ctrl:UserRegisterCtrl;
 //模型，数据处理
-class Model {
+class Model extends BaseModel{
     private initText:string = null
     private actTime:number = null
 
@@ -15,6 +17,7 @@ class Model {
     private _password:string = null
     constructor()
     { 
+        super();
         this.initText = 'do register';
         this.actTime = 3;
     }
@@ -43,21 +46,23 @@ class Model {
     }
 }
 //视图, 界面显示或动画，在这里完成
-class View {
+class View extends BaseView{
     ui={
         lab_info : null,
         node_pointer : null
     };
-    private node:cc.Node = null
-    private model:Model =null
+    node:cc.Node = null
+    model:Model =null
 
     constructor(model)
     { 
+        super(model);
         this.model = model; 
         this.node = ctrl.node;  
         this.initUi();
+        this.addGrayLayer();
     } 
-    private initUi()
+    initUi()
     {  
         this.ui.lab_info = ctrl.lab_info;
         this.ui.node_pointer = ctrl.node_pointer;
@@ -100,14 +105,8 @@ export default class UserRegisterCtrl extends BaseCtrl {
         //创建mvc模式中模型和视图
         //控制器
         ctrl = this;
-        //数据模型
-        this.model = new Model();
-        //视图
-        this.view = new View(this.model);
-        //引用视图的ui  
-        this.ui=this.view.ui; 
-        //绑定ui操作
-        this.connectUi();
+		//初始化mvc
+		this.initMvc(Model,View);
     }
     connectUi()
     {

@@ -9,7 +9,7 @@ import RoomMgr from "../../../Plat/GameMgrs/RoomMgr";
 //与服务器段已知的牌字典
 export default class QzmjLogic extends BaseMgr
 { 
-    static handcardnum=16; 
+    static handcardnum=13; 
     static dicetime=16; 
     maxoptime=12; 
     players={};  
@@ -64,7 +64,7 @@ export default class QzmjLogic extends BaseMgr
         this.players={};  
         this.seatcount=4;//座位个数  
         //创建四个角色
-        for (var i = 0;i<this.seatcount-1;i++)
+        for (var i = 0;i<this.seatcount;i++)
         {
             this.players[i]=new QzMjPlayer;
             this.players[i].init(i,this)
@@ -207,6 +207,7 @@ export default class QzmjLogic extends BaseMgr
         var event=msg.event; 
         var op=QzmjDef.op_cfg[event]
         this.cur_opseatid=msg.opseatid;
+        console.log("onOp event=",msg.event,op,'curopseat=',this.cur_opseatid)
         if (op==QzmjDef.op_chupai) 
         {
             this.op_chupai(msg);
@@ -299,6 +300,7 @@ export default class QzmjLogic extends BaseMgr
     //麻将事件
     onEvent(msg)
     {
+        console.log("onEvent msg.event=",msg.event)
         // body
         this.cur_eventtype=msg.event; 
         var cur_op=QzmjDef.op_cfg[this.cur_eventtype]
@@ -478,10 +480,11 @@ export default class QzmjLogic extends BaseMgr
     process_fapai(msg){
         // body 
         this.cardwallindex=msg.cardwallindex;
-        var myseatid=RoomMgr.getInstance().myseatid;
+        var myseatid=RoomMgr.getInstance().myseatid; 
         for (var seatid=0;seatid<4;++seatid){  
+            
             if (seatid == myseatid){ 
-                //全部填充，屏幕所有者只关心自己的牌就够了 
+                //全部填充，屏幕所有者只关心自己的牌就够了  
                 this.players[seatid].initHandCard(msg.handcard)
             }
             else 
@@ -537,7 +540,7 @@ export default class QzmjLogic extends BaseMgr
         }
         this.notify_msg('room.roomHandler.playerOp',msg);
     }
-    playerOp(data){
+    playerOp(data=null){
         // body
         var msg={
             'ok':true,

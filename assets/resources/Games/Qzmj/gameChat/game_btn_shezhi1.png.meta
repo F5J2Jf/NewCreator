@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "8d038de8-e5f0-428b-9fee-56d518aa5d78",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "game_btn_shezhi1": {
+      "ver": "1.0.3",
+      "uuid": "897792fa-69b2-439d-894f-fbf32904c83e",
+      "rawTextureUuid": "8d038de8-e5f0-428b-9fee-56d518aa5d78",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 62,
+      "height": 62,
+      "rawWidth": 62,
+      "rawHeight": 62,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

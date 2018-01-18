@@ -1,5 +1,6 @@
 //
 import BaseMgr from "../Libs/BaseMgr";
+import UserMgr from "./UserMgr";
 
  
 export default class RechargeMgr extends BaseMgr{
@@ -11,15 +12,16 @@ export default class RechargeMgr extends BaseMgr{
         this.billid=null;
         this.routes={
             'http.reqBill':this.http_reqBill, 
-            'onPay' : this.onPay,
+            'onPay' : this.onPay,    
         }
     }
-
-    onPay(msg){
-
+   
+    onPay(msg){ 
+        //不直接刷新我的物品信息，要点击领取后主动获取
     }
     http_reqBill(msg) {
-        this.billid=msg;
+        this.billid=msg.billid; 
+        this.send_msg('http.reqPay',{billid:this.billid});
     }
 
     reqBill(id){
@@ -34,6 +36,8 @@ export default class RechargeMgr extends BaseMgr{
         }
         this.send_msg('http.reqPay',billinfo);
     } 
+    //goodstype:1表示钻石/元宝 2表示房卡，3表示金币
+    //goodsid是列表中的id
     reqBuyGoods(goodstype,goodsid){
         let goodsinfo={
             'goodstype':goodstype, 

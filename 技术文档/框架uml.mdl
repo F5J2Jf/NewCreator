@@ -950,14 +950,13 @@
 					Operation  	"reqRoomEntry"
 					quidu      	"000000000000"
 					creation   	FALSE)
-				    (object Message "http_reqRoomEntry(在此客户端就先进入游戏，后面再去进入逻辑服）)"
+				    (object Message "http_reqRoomEntry"
 					quid       	"5A55A85D03CF"
 					frequency  	"Aperiodic"
 					synchronization 	"Return"
 					dir        	"ToClientFromSupplier"
 					sequence   	"2.1"
 					ordinal    	3
-					Operation  	"http_reqRoomEntry"
 					quidu      	"000000000000"
 					creation   	FALSE)
 				    (object Message "reqRoomUsers(请求房间内玩家列表)"
@@ -2309,9 +2308,9 @@
 			    quidu      	"5A55A85D03CF"
 			    anchor_loc 	1
 			    nlines     	1
-			    max_width  	1607
+			    max_width  	476
 			    justify    	0
-			    label      	"http_reqRoomEntry(在此客户端就先进入游戏，后面再去进入逻辑服）)"
+			    label      	"http_reqRoomEntry"
 			    pctDist    	0.500000
 			    height     	45
 			    orientation 	1)

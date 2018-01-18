@@ -19,12 +19,14 @@ const {ccclass, property} = cc._decorator;
 let ctrl : QzmjSeatCtrl;
 //模型，数据处理
 class Model extends BaseModel{
-	seatid=null;
+	seatid=null;//视图座位
 	uid=null; 
-	logicseatid=null;
+	logicseatid=null;//逻辑座位，服务器那边的座位
 	userinfo=null;
 	hucount=0;
 	player=null;
+	isZhuangJia=false;//庄家标记
+	isMaster=false;//房主标记
 	constructor()
 	{
 		super();
@@ -45,16 +47,22 @@ class Model extends BaseModel{
 	updateLogicId(  )
 	{
 		// body
-		this.logicseatid=RoomMgr.getInstance().getLogicSeatId(this.seatid);
+		this.logicseatid=RoomMgr.getInstance().getLogicSeatId(this.seatid); 
 		this.player=QzmjLogic.getInstance().players[this.logicseatid]; 
 		this.uid=RoomMgr.getInstance().users[this.logicseatid]; 
 	} 
 	updateUserInfo() 
-	{
-		console.log("uid=",this.uid)
+	{ 
 		this.userinfo=UserMgr.getInstance().getUserById(this.uid) 
 	}
-
+	updateZhuang()
+	{ 
+		this.isZhuangJia=QzmjLogic.getInstance().zhuangseat==this.logicseatid;
+	}
+	recover()
+	{
+		this.updateZhuang();
+	}
 }
 //视图, 界面显示或动画，在这里完成
 class View extends BaseView{
@@ -63,6 +71,10 @@ class View extends BaseView{
 		img_frame:null,//头像背景
 		img_head:null,//头像
 		lbl_nickname:null,//昵称 
+		zhuangflag:null,//庄家标记
+		masterflag:null,//房主标记
+		lbl_huacount:null,//花的数量
+		
 	};
 	node=null;
 	constructor(model){
@@ -76,16 +88,10 @@ class View extends BaseView{
 		this.ui.img_frame=ctrl.img_frame;
 		this.ui.img_head=ctrl.img_head;
 		this.ui.lbl_nickname=ctrl.lbl_nickname; 
-
-		// this.ui.lbl_nickname=this.seek(this.node,'lbl_nickname'); 
-		// this.ui.img_head=this.seek(this.node,'img_head');
-		// this.ui.zhuangflag=this.seek(this.node,'zhuangflag');
-		// this.ui.masterflag=this.seek(this.node,'masterflag');
-		// this.ui.img_headframe=this.seek(this.node,'img_headframe');
-		// this.ui.node_hua=this.seek(this.node,'node_hua');
-		// this.ui.node_hua=this.seek(this.node,'node_hua');
-		// this.ui.lbl_huacount=this.seek(this.node,'lbl_huacount');
-		// this.ui.lbl_huacount:setString(0)
+		this.ui.zhuangflag=ctrl.zhuangflag; 
+		this.ui.masterflag=ctrl.masterflag; 
+		this.ui.lbl_huacount=ctrl.lbl_huacount; 
+   
 		this.clear();
 	}
 
@@ -94,22 +100,20 @@ class View extends BaseView{
 	clear( )
 	{
 		this.node.active=false;
-		// this.ui.zhuangflag:setVisible(false)
-		// this.ui.masterflag:setVisible(false)
-		// var filename='res/cocosstudio/pics/head/0.png'; 
-		// this.ui.img_head:loadTexture(filename,0);
-		// this.ui.lbl_nickname:setText('')
-		// this.ui.node_hua:setVisible(false);
+		this.ui.zhuangflag.active=false;
+		this.ui.masterflag.active=false; 
+		this.ui.lbl_nickname.string="" 
 	} 
- 
-	updateInfo()
+	updateZhuang()
 	{
-		// body 
-		// this.node:setVisible(true)
-		// var userinfo=this.model.userinfo
-		// var headpng=UserMgr.getInstance().getHeadPng(userinfo.headid)
-		// this.ui.img_head:loadTexture(headpng,0) 
-		// this.ui.lbl_nickname:setText(userinfo.nickname)
+		this.ui.zhuangflag.active=this.model.isZhuangJia
+	}
+	updateInfo()
+	{ 
+		this.node.active=true;
+		var userinfo=this.model.userinfo
+        UiMgr.getInstance().setUserHead(this.ui.img_head, userinfo.headid, userinfo.headurl);
+		this.ui.lbl_nickname.string=userinfo.nickname
 	} 
 	showHua()
 	{
@@ -139,9 +143,7 @@ export default class QzmjSeatCtrl extends BaseCtrl {
     @property(cc.Node)
     zhuangflag = null; 
     @property(cc.Node)
-    masterflag = null; 
-    @property(cc.Node)
-    masterflag = null; 
+    masterflag = null;  
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
 
@@ -186,7 +188,8 @@ export default class QzmjSeatCtrl extends BaseCtrl {
 	{
 		// body
 		if (QzmjLogic.getInstance().zhuangseat==this.model.logicseatid) { 
-			this.ui.zhuangflag.setVisible(true)
+			this.model.recover();
+			this.view.updateZhuang()
 			this.view.showHua();
 			this.view.updateHua()
 		}
@@ -223,11 +226,9 @@ export default class QzmjSeatCtrl extends BaseCtrl {
 	process_dingzhuang(msg)
 	{
 		// body
-		this.view.showHua();
-		if (msg.zhuangseat!=this.model.logicseatid){ 
-			return;
-		}
-		this.ui.zhuangflag.setVisible(true)
+		this.view.showHua(); 
+		this.model.updateZhuang();
+		this.view.updateZhuang(); 
 	} 
  
 	onLeaveRoom(msg){ 
@@ -259,7 +260,7 @@ export default class QzmjSeatCtrl extends BaseCtrl {
 
  
 	http_reqUsers(  ){
-	// body
+	// body 
 		if(this.model.uid==null){ 
 			return;
 		}

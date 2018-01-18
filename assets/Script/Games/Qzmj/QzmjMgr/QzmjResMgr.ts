@@ -1,56 +1,58 @@
 var cardpngs={
-
+    //万
+    17:'1',
+    18:'2',
+    19:'3',
+    20:'4',
+    21:'5',
+    22:'6',
+    23:'7',
+    24:'8',
+    25:'9',
     
-    17:'mahjong_1',
-    18:'mahjong_2',
-    19:'mahjong_3',
-    20:'mahjong_4',
-    21:'mahjong_5',
-    22:'mahjong_6',
-    23:'mahjong_7',
-    24:'mahjong_8',
-    25:'mahjong_9',
+    //条
+    33:'21',
+    34:'22',
+    35:'23',
+    36:'24',
+    37:'25',
+    38:'26',
+    39:'27',
+    40:'28',
+    41:'29', 
 
-    
-    33:'mahjong_17',
-    34:'mahjong_18',
-    35:'mahjong_19',
-    36:'mahjong_20',
-    37:'mahjong_21',
-    38:'mahjong_22',
-    39:'mahjong_23',
-    40:'mahjong_24',
-    41:'mahjong_25', 
-
-    49:'mahjong_33',
-    50:'mahjong_34',
-    51:'mahjong_35',
-    52:'mahjong_36',
-    53:'mahjong_37',
-    54:'mahjong_38',
-    55:'mahjong_39',
-    56:'mahjong_40',
-    57:'mahjong_41', 
+    //筒
+    49:'11',
+    50:'12',
+    51:'13',
+    52:'14',
+    53:'15',
+    54:'16',
+    55:'17',
+    56:'18',
+    57:'19', 
 
 
-    65:'mahjong_49',  
-    67:'mahjong_50',  
-    69:'mahjong_51',  
-    71:'mahjong_52',    
-    73:'mahjong_65',   
-    75:'mahjong_66',  
-    77:'mahjong_67',
 
-    81:'mahjong_81',  
-    83:'mahjong_82',  
-    85:'mahjong_83', 
-    87:'mahjong_84',
+    //其他
+    65:'31',  
+    67:'32',  
+    69:'33',  
+    71:'34',    
+    73:'35',   
+    75:'36',  
+    77:'37',
+
+    81:'38',  
+    83:'39',  
+    85:'41', 
+    87:'42',
 
 
-    89:'mahjong_97', 
-    91:'mahjong_98', 
-    93:'mahjong_99', 
-    95:'mahjong_100',   
+    89:'43', 
+    91:'44', 
+    93:'45', 
+    95:'46',  	
 }
  
 var huanames={
@@ -78,72 +80,20 @@ export default class QzmjResMgr{
     static cardpngs=cardpngs;
     static huanames=huanames; 
  
-    cards=[]
-    wallcards=[]
+   
     jin=null;  
-    csbpath="3dres/mj/mj.c3b";
-    cardcount=144+10;
-    wallcount=144;
+   
     private static _instance:QzmjResMgr;
 
-    getTotalCount()
-    {
-        return this.cardcount+this.wallcount;
-    } 
-    loadCards(cb)
-    { 
-        this.cards=[]; 
-        // for (var i = 1;i<this.cardcount;++i)
-        // { 
-        //     cc.Sprite3D:createAsync(this.csbpath, function(card)
-        //         card:retain();
-        //         card:setVisible(false)
-        //         local info={};
-        //         info.node=card;
-        //         info.inuse=false;
-        //         table.insert(this.cards,info)
-        //         cb();
-        //     end) 
-        // end 
-    }   
-    loadWalls(cb)
-    { 
-        this.wallcards=[]; 
-        //创建3d麻将资源 
-        // for i = 1,this.wallcount do 
-        //     cc.Sprite3D:createAsync(this.csbpath, function(card)
-        //         card:retain();
-        //         card:setVisible(false)
-        //         local info={};
-        //         info.node=card;
-        //         info.inuse=false;
-        //         table.insert(this.wallcards,info)
-        //         cb();
-        //     end) 
-        // end 
-    } 
+ 
     constructor()
     {
-        this.jin=null; 
-        this.cards=[]; 
-        this.csbpath="3dres/mj/mj.c3b";
-        this.cardcount=144+10;
-        this.wallcount=144;
+        this.jin=null;  
     }  
    
     clear()
     {
-        // body
-        for (var i = 0;i<this.cards.length;++i){ 
-            var info=this.cards[i];
-            info.node.setVisible(false);
-            info.inuse=false; 
-        }
-        for (var i = 1;i<this.wallcards.length;++i){ 
-            var info=this.wallcards[i];
-            info.node.setVisible(false);
-            info.inuse=false; 
-        } 
+   
     } 
     public static getInstance ():QzmjResMgr{
         if(!this._instance){
@@ -151,68 +101,21 @@ export default class QzmjResMgr{
         }
         return this._instance;
     } 
-    getCardName(value)
-    {
-        if (value == 0){ 
-            value=this.jin
-        }  
-        return `res/cocosstudio/pics/fqmj/tileface/${QzmjResMgr.cardpngs[value]}.png` 
-    }
+ 
     setJin(jin)
     {
         this.jin=jin;
     } 
-    removeCard(card)
+ 
+    getCardTextureByValue(value)
     {
-        // body
-        card.inuse=false;
-        card.node.setVisible(false);
-    } 
-    getCard(value)
-    {
-        // body
-        for (var i = 0;i<this.cards.length;++i){
-            var card=this.cards[i];
-            if (! card.inuse){ 
-                card.inuse=true;
-                card.node.setVisible(true) 
-                //替换金
-                if (value && value== 0 )
-                {
-                    value=this.jin; 
-                } 
-                if (value && QzmjResMgr.cardpngs[value])
-                {
-                    //card.node.setTexture('res/3dres/mj/' .. QzmjResMgr.cardpngs[value] .. '.jpg',2)
-                }
-                return card
-            } 
-        }
-        return null
-    } 
-
-    getWallCard()
-    { 
-        // body
-        for (var i = 0;i<this.wallcards.length;++i)
+        if (value== 0 )
         {
-            var card=this.wallcards[i];
-            if(card.inuse){ 
-                card.inuse=true;
-                card.node.setVisible(true)
-                return card
-            } 
-        }
-        return null
-    }
-
-    updateCard(card,value)
-    {
-        // body  
-        if (value && QzmjResMgr.cardpngs[value])
-        { 
-            //card.node.setTexture('res/3dres/mj/' .. QzmjResMgr.cardpngs[value] .. '.jpg',2)
-        }
+            value=this.jin; 
+        } 
+        var cardName= QzmjResMgr.cardpngs[value];
+        var texture=cc.loader.getRes(cc.url.raw(`resources/Games/Qzmj/MaJiang2d/${cardName}.png`)) 
+        return texture;
     }
 }
  

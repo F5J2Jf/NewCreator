@@ -93,6 +93,10 @@ export default class Prefab_AddRoomCtrl extends BaseControl {
 	connectUi()
 	{
 		this.connect(G_UiType.image, this.CloseBtn, this.CloseBtn_cb, "关闭按钮");
+		let keys = this.KeyBtn.children;
+		for (let i in keys) {
+			if (keys[i] instanceof cc.Node) this.connect(G_UiType.image, keys[i], this.Keys_cb, "键盘按钮");			
+		}
 	}
 	start () {
 	}
@@ -103,6 +107,20 @@ export default class Prefab_AddRoomCtrl extends BaseControl {
 	//按钮或任何控件操作的回调begin
 	private CloseBtn_cb () : void {
 		this.finish();
+	}
+
+	private Keys_cb (event) : void {
+		let key = event.name;
+		let string = this.Label_RoomId.string;
+		if (key == "btn_again") {
+			this.Label_RoomId.string = "";
+		} else if (key == "btn_del") {
+			string = string.substr(0, string.length - 1);
+			this.Label_RoomId.string = string;
+		} else {
+			if (this.Label_RoomId.string.length >= 6) return//限制房间号，只能6位数
+			this.Label_RoomId.string = string + key;
+		}
 	}
 	//end
 }

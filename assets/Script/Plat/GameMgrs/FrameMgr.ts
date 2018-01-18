@@ -2,6 +2,8 @@ import WM_Emitter from "../Libs/WM_Emitter";
 import BaseMgr from "../Libs/BaseMgr";
 import Prefab_MsgBoxCtrl from "../Modules/MsgBox/Prefab_MsgBoxCtrl";
 import ModuleMgr from "./ModuleMgr";
+import Prefab_harvestCtrl from "../Modules/MsgBox/Prefab_harvestCtrl";
+import Prefab_loadAniCtrl from "../Modules/LoadingPlat/Prefab_loadAniCtrl";
 
  
 
@@ -12,6 +14,8 @@ window['G_FRAME']=G_FRAME
 
 //基础的管理器
 export default class FrameMgr{ 
+    private _loadLayer:Prefab_loadAniCtrl = null;
+
     //单例处理 
     private static _instance:FrameMgr;
     public static getInstance ():FrameMgr{
@@ -36,5 +40,34 @@ export default class FrameMgr{
         ModuleMgr.getInstance().start_sub_module(G_MODULE.MsgBox, (prefabComp:Prefab_MsgBoxCtrl)=>{
             prefabComp.showMsg(content, okcb, false, title)
         })
+    }
+     /**
+     * 
+     * @param itemNum 显示的所有物品 种类数量
+     * @param imgName 物品图片的名字
+     * @param recItemNum 单个物品 获取到的数量
+     * @param cb 完成领取后的回调
+     */
+    public showHarvest(itemNum:number, imgName:string, recItemNum:string, cb?:Function){
+        ModuleMgr.getInstance().start_sub_module(G_MODULE.HarvestFrame, (prefabComp:Prefab_harvestCtrl)=>{
+            prefabComp.showItems(itemNum, imgName, recItemNum, cb)
+        })
+    }
+
+    //显示加载动画
+    public showLoadAni(){
+        if(!this._loadLayer || !cc.isValid(this._loadLayer) && !this._loadLayer.node.parent){
+            ModuleMgr.getInstance().start_sub_module(G_MODULE.LoadAni, (prefabComp:Prefab_loadAniCtrl)=>{
+                this._loadLayer = prefabComp;
+                prefabComp.showLoad()
+            })
+        }
+    }
+    //关闭加载动画
+    public clearLoadAni(){
+        if(this._loadLayer && cc.isValid(this._loadLayer) && this._loadLayer.node.parent){
+            this._loadLayer.clearLoad();
+            this._loadLayer=null;
+        }
     }
 }

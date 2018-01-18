@@ -13,6 +13,7 @@ import QzmjLogic from "../QzmjMgr/QzmjLogic";
 import UserMgr from "../../../Plat/GameMgrs/UserMgr";
 import { QzmjDef } from "../QzMjMgr/QzmjDef";
 import FrameMgr from "../../../Plat/GameMgrs/FrameMgr";
+import QzmjResMgr from "../QzmjMgr/QzmjResMgr";
 
 var aniCfg={
 	op_hu:'hu',
@@ -68,7 +69,7 @@ class Model extends BaseModel{
 class View extends BaseView{
 	ui={
 		//在这里声明ui
-		prepareflags:null,
+		prepareFlags:null,
 		btn_prepare:null,
 		panel_round:null,
 		lbl_roundcount:null,
@@ -81,17 +82,44 @@ class View extends BaseView{
 		btn_exit:null,
 		btn_help:null,
 	};
-	private node=null;
+	//private node=null;
 	constructor(model){
 		super(model);
 		this.node=ctrl.node;
-		this.ui.prepareflags={}
+		this.ui.prepareFlags={}
+		this.showComponents();
 		this.initUi();
+	}
+	updatePrepareFlag(viewseatid,bPrepared)
+	{
+		this.ui.prepareFlags[viewseatid].active=bPrepared;
+	}
+	showComponents(){
+		var rpparr=[ctrl.rpp_mycards,ctrl.rpp_handcard_1,ctrl.rpp_handcard_2,ctrl.rpp_handcard_3,ctrl.rpp_mjevent,
+			ctrl.rpp_doorcard_0,ctrl.rpp_doorcard_1,ctrl.rpp_doorcard_2,
+			ctrl.rpp_doorcard_3,ctrl.rpp_cardpool_0,ctrl.rpp_cardpool_1,ctrl.rpp_cardpool_2,
+			ctrl.rpp_cardpool_3,ctrl.rpp_clock,ctrl.rpp_deposit,ctrl.rpp_dice]
+		var prefabarr=[ctrl.Prefab_MaJiang_0,ctrl.Prefab_MaJiang_1,ctrl.Prefab_MaJiang_2,ctrl.Prefab_MaJiang_3,ctrl.Prefab_MjEvent,ctrl.Prefab_FourMaJiang_0,
+			ctrl.Prefab_FourMaJiang_1,ctrl.Prefab_FourMaJiang_2,
+			ctrl.Prefab_FourMaJiang_3,ctrl.Prefab_PoolMaJiang_0,ctrl.Prefab_PoolMaJiang_1,ctrl.Prefab_PoolMaJiang_2,ctrl.Prefab_PoolMaJiang_3,
+			ctrl.Prefab_Clock,ctrl.Prefab_deposit,ctrl.Prefab_Dice]
+		for(var i=0;i<rpparr.length;++i)
+		{
+			var rppnode=rpparr[i];
+			var prefab=prefabarr[i]; 
+			let prefabNode = cc.instantiate(prefab); 
+			prefabNode.setPosition(rppnode.position);
+			this.node.addChild(prefabNode);
+		}
+	
+    	this.ui.prepareFlags[0]=ctrl.img_prepared_0;
+		this.ui.prepareFlags[1]=ctrl.img_prepared_1;
+		this.ui.prepareFlags[2]=ctrl.img_prepared_2;
+		this.ui.prepareFlags[3]=ctrl.img_prepared_3;
 	}
 	//初始化ui
 	initUi()
-	{
-		 
+	{ 
 		this.ui.btn_prepare=ctrl.btn_prepare; 
 		this.ui.panel_round=ctrl.panel_round;
 		this.ui.lbl_roundcount=ctrl.lbl_roundcount; 
@@ -102,15 +130,15 @@ class View extends BaseView{
 		this.ui.jin=ctrl.jin;
 		this.ui.lbl_shen=ctrl.lbl_shen;
 		this.ui.btn_exit=ctrl.btn_exit;
-		this.ui.btn_help=ctrl.btn_help;
+		this.ui.btn_help=ctrl.btn_help; 
+		for(var seatid =0;seatid<4;++seatid)
+		{
+			var viewseatid=RoomMgr.getInstance().getViewSeatId(seatid);
+			var flag=this.ui.prepareFlags[viewseatid] 
+			flag.active=RoomMgr.getInstance().preparemap[seatid];
  
-		for (var seatid=0;seatid<4;++seatid){ 
-			var viewseatid=RoomMgr.getInstance().getViewSeatId(seatid); 
-			var flag=RoomMgr.getInstance().preparemap[seatid]
-			//this.ui.prepareflags[viewseatid].active=false
-		}
-		this.ui.btn_prepare.active=!this.model.myPrepared 
-
+		} 
+		this.ui.btn_prepare.active=!this.model.myPrepared  
 	} 
     
 	updateRoundInfo(){ 
@@ -139,24 +167,24 @@ class View extends BaseView{
 	clear()
 	{
 		// body
-		this.ui.mjpoint.active=false
+		//this.ui.mjpoint.active=false
 		this.ui.jin.active=false
 		for (var seatid =0;seatid<4;seatid++)
 		{
-			//this.ui.prepareflags[seatid].active=false
+			this.ui.prepareFlags[seatid].active=false
 		}
-		this.ui.lbl_cardcount.active=false
-		this.ui.lbl_shen.active=false 
+		this.ui.lbl_cardcount.node.active=false
+		this.ui.lbl_shen.node.active=false 
 	}  
  
 	//显示金
 	updateJin(){
 		// // body 
-		// this.ui.jin:setVisible(true) 
-		// var face=this.ui.jin:getChildByName('face');  
-		// var cardpng=FqmjResMgr.cardpngs[this.model.jin] 
-		// var filename='res/cocosstudio/pics/fqmj/tileface/' .. cardpng .. '.png'; 
-		// face:loadTexture(filename,0); 
+		this.ui.jin.active=true 
+		var face=this.ui.jin.getChildByName('face');    
+		let texture = QzmjResMgr.getInstance().getCardTextureByValue(this.model.jin);
+		let frame = new cc.SpriteFrame(texture);
+		face.getComponent(cc.Sprite).spriteFrame = frame;    
 	}
 
 	//显示操作
@@ -214,7 +242,10 @@ class View extends BaseView{
 		// end
 		// action:setFrameEventCallFunc(cb) 
 	}
- 
+    showCardCount(){
+		this.ui.lbl_cardcount.node.active=true;
+		this.ui.lbl_shen.node.active=true;
+	}
 }
 //c, 控制
 @ccclass
@@ -242,6 +273,105 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	btn_exit=null;
     @property(cc.Node)
 	btn_help=null;
+    @property({
+		tooltip : "麻将界面设置按钮",
+		type : cc.Node
+	})
+	btn_setting : cc.Node = null;
+    @property({
+		tooltip : "麻将界面设置预制资源",
+		type : cc.Prefab
+	})
+	Prefab_Setting : cc.Prefab = null;
+
+
+	//这边下面是麻将重要组件 
+    @property(cc.Prefab)
+	Prefab_FourMaJiang_0=null;
+    @property(cc.Prefab)
+	Prefab_FourMaJiang_1=null;
+    @property(cc.Prefab)
+	Prefab_FourMaJiang_2=null;
+    @property(cc.Prefab)
+	Prefab_FourMaJiang_3=null;
+
+	@property(cc.Prefab)
+	Prefab_MaJiang_0=null;
+	@property(cc.Prefab)
+	Prefab_MaJiang_1=null;
+	@property(cc.Prefab)
+	Prefab_MaJiang_2=null;
+	@property(cc.Prefab)
+	Prefab_MaJiang_3=null;
+
+	
+	@property(cc.Prefab)
+	Prefab_PoolMaJiang_0=null;
+	@property(cc.Prefab)
+	Prefab_PoolMaJiang_1=null;
+	@property(cc.Prefab)
+	Prefab_PoolMaJiang_2=null;
+	@property(cc.Prefab)
+	Prefab_PoolMaJiang_3=null;
+
+	
+	@property(cc.Prefab)
+	Prefab_Clock=null;
+
+
+	@property(cc.Prefab)
+	Prefab_deposit=null;
+
+
+	@property(cc.Prefab)
+	Prefab_MjEvent=null;
+	 
+	@property(cc.Prefab)
+	Prefab_Dice=null;
+    //以下是占位图
+	@property(cc.Node)
+	rpp_dice=null;
+	@property(cc.Node)
+	rpp_mycards=null;
+	@property(cc.Node)
+	rpp_handcard_1=null;
+	@property(cc.Node)
+	rpp_handcard_2=null;
+	@property(cc.Node)
+	rpp_handcard_3=null;
+	@property(cc.Node)
+	rpp_mjevent=null;
+	@property(cc.Node)
+	rpp_doorcard_0=null;
+	@property(cc.Node)
+	rpp_doorcard_1=null;
+	@property(cc.Node)
+	rpp_doorcard_2=null;
+	@property(cc.Node)
+	rpp_doorcard_3=null;
+	@property(cc.Node)
+	rpp_cardpool_0=null;
+	@property(cc.Node)
+	rpp_cardpool_1=null;
+	@property(cc.Node)
+	rpp_cardpool_2=null;
+	@property(cc.Node)
+	rpp_cardpool_3=null;
+	@property(cc.Node)
+	rpp_clock=null;
+	@property(cc.Node)
+	rpp_deposit=null;
+   
+	//四个准备标志
+	@property(cc.Node)
+	img_prepared_0=null,
+	@property(cc.Node)
+	img_prepared_1=null,
+	@property(cc.Node)
+	img_prepared_2=null,
+	@property(cc.Node)
+	img_prepared_3=null,
+
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离 
 
@@ -249,7 +379,7 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 		//创建mvc模式中模型和视图
 		//控制器
 		ctrl = this;
-		this.initMvc(Model,View);
+		this.initMvc(Model,View); 
 	}
 
 	//定义网络事件
@@ -286,12 +416,14 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 		// this.connect(uitype.button,this.ui.btn_setting,this.btn_setting,'设置')
 		// this.connect(uitype.button,this.ui.btn_chat,this.btn_chat,'聊天')
 		// this.connect(uitype.button,this.ui.btn_prepare,this.btn_prepare,'准备')
+        this.connect(G_UiType.image, this.btn_prepare, this.btn_prepare_cb, '点击准备')
+		this.connect(G_UiType.image, this.btn_setting, this.btn_setting_cb, '点击设置')
 	 
 	}
-	start () {
+	start () { 
+		RoomMgr.getInstance().enterRoom();
 	}
-	//网络事件回调begin
-
+	//网络事件回调begin 
  
 	http_reqRoomInfo() 
 	{
@@ -328,7 +460,7 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 		var okcb=function(){
 			this.start_module(G_MODULE.Plaza)
 		} 
-		FrameMgr.getInstance().showDialog('房主有事，房间解散',okcb.bind(this)) 
+		FrameMgr.getInstance().showMsgBox('房主有事，房间解散',okcb.bind(this)) 
 	}
 
 	http_reqExitRoom(  ){
@@ -339,10 +471,10 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	http_reqRoomUsers(){
 		// body  
 		// if (RoomMgr.getInstance().roomstate==RoomMgr.state_oncemore) {  
-		// 	RoomMgr.getInstance().prepare()
+		// 	RoomMgr.getInstance().reqPrepare()
 		// }
-		this.model.updateMyInfo();
-		this.updateMyPrepared();
+		this.model.updateMyInfo();//更新我的信息
+		this.updateMyPrepared();//更新我的装备状态
 		this.model.clear();
 		this.view.clear(); 
 		this.view.initUi();
@@ -368,14 +500,13 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	updateMyPrepared(  ){
 		// body
 		this.model.updateMyPrepared();
-		this.ui.btn_prepare.active= this.model.myPrepared 
+		this.ui.btn_prepare.active= !this.model.myPrepared 
 	}
 	
 	onPrepare(msg)
 	{
 		var viewseatid=RoomMgr.getInstance().getViewSeatId(msg.seatid)
-	
-		//this.ui.prepareflags[viewseatid].active=true
+	    this.view.updatePrepareFlag(viewseatid,true); 
 		if(msg.seatid==this.model.mySeatId){ 
 			this.updateMyPrepared();
 		}
@@ -400,8 +531,7 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 			this.view.updateJin();
 		}
 		else if (msg.process==QzmjDef.process_fapai ){  
-			this.ui.lbl_cardcount:setVisible(true)
-			this.ui.lbl_shen:setVisible(true)
+			this.view.showCardCount();
 		 
 		}
 		else if( msg.process==QzmjDef.process_ready){ 
@@ -420,7 +550,7 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	process_dingzhuang()
 	{
 		for (var seatid =0;seatid<4;++seatid){  
-			//this.ui.prepareflags[seatid].active=false
+			this.ui.prepareFlags[seatid].active=false
 		} 
 	}    
 	process_ready(){
@@ -430,22 +560,20 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	}
 	onLeaveRoom(msg){
 		var viewseatid=RoomMgr.getInstance().getViewSeatId(msg.seatid)
-		//this.ui.prepareflags[viewseatid].active=false
+		this.ui.prepareFlags[viewseatid].active=false
 	}
 	btn_chat_cb( ){
 
 	} 
-	btn_setting_cb( ){
-		//this.start_sub_module(platmodule.roomsetting)
-	}
+	
 	btn_prepare_cb( ){ 
-		RoomMgr.getInstance().prepare()
+		RoomMgr.getInstance().reqPrepare()
 		// if (RoomMgr.getInstance().roomstate==RoomMgr.state_stayinroom){
 		// 	RoomMgr.getInstance().onceMore()
 		// }  
 		// else
 		// {
-		// 	RoomMgr.getInstance().prepare()
+		// 	RoomMgr.getInstance().reqPrepare()
 		// }
 	}  
 	btn_help_cb(){
@@ -498,5 +626,10 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	//全局事件回调begin
 	//end
 	//按钮或任何控件操作的回调begin
+	private btn_setting_cb () : void {
+		// this.start_sub_module(G_MODULE.RoomSetting);
+		let node = cc.instantiate(this.Prefab_Setting);
+		cc.find("Canvas").addChild(node);
+	}
 	//end
 }

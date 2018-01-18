@@ -60,7 +60,8 @@ class View extends BaseView{
 	constructor(model){
 		super(model);
 		this.node=ctrl.node;
-		this.initUi();
+        this.initUi();
+        this.addGrayLayer();
 	}
 	//初始化ui
 	initUi()
@@ -90,7 +91,7 @@ class View extends BaseView{
             this.ui.node_confirm.x = 0;
         }else{
             this.ui.node_cancel.active = true;
-            this.ui.node_confirm.x = this.ui.node_confirm['_firstX'];
+            if(this.ui.node_confirm['_firstX']) this.ui.node_confirm.x = this.ui.node_confirm['_firstX'];
         }
     }
 }
@@ -111,7 +112,7 @@ export default class Prefab_MsgBoxCtrl extends BaseCtrl {
     lab_title:cc.Label = null
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
-
+    
     //attributes
     private _cb_response:Function = null
 	onLoad (){
@@ -176,16 +177,16 @@ export default class Prefab_MsgBoxCtrl extends BaseCtrl {
 
     private _onClick_confirm(){
         console.log('_onClick_confirm')
-        this._doFinish(false);
+        this._doFinish();
     }
     private _onClick_cancel(){
         console.log('_onClick_cancel')
-        this._doFinish(true);
+        this.finish();
     }
 
-    private _doFinish(isConfirm:Boolean){
+    private _doFinish(){
         if(this._cb_response){
-            this._cb_response(isConfirm);
+            this._cb_response();
         }
         this.finish();
     }

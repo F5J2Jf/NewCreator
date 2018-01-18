@@ -1,7 +1,12 @@
 import BaseMgr from "../Libs/BaseMgr";
 import UserMgr from "./UserMgr";
-import RoomMgr from "./RoomMgr";
-  
+import RoomMgr from "./RoomMgr"; 
+import GoodsCfg from "../CfgMgrs/GoodsCfg"; 
+import GameIdCfg from "../CfgMgrs/GameIdCfg";
+import BetCfg from "../CfgMgrs/BetCfg";
+import VerifyMgr from "./VerifyMgr";
+import BetMgr from "./BetMgr";
+import FrameMgr from "./FrameMgr";
 export default class PlatMgr extends BaseMgr{
     loadprocess:any = null
     loadarr:Array<Function> = null
@@ -41,6 +46,11 @@ export default class PlatMgr extends BaseMgr{
     }
 
     initPlat(completecb){
+        //初始化所有管理器
+        VerifyMgr.getInstance();
+        BetMgr.getInstance();
+        RoomMgr.getInstance();
+
         this.completecb = completecb
         //获取我的信息
         for(let i = 0; i < this.totalcount; i ++){
@@ -58,8 +68,7 @@ export default class PlatMgr extends BaseMgr{
         if(ev_type==1){
             this.enterPlat();  
         }
-    }
-
+    } 
 
     //单例处理
     private static _instance:PlatMgr;
@@ -68,5 +77,17 @@ export default class PlatMgr extends BaseMgr{
             this._instance = new PlatMgr();
         }
         return this._instance;
+    }
+
+    //以下是加载平台资源
+    loadCfgs()
+    {
+        //一开始先加载goods; 
+        GoodsCfg.getInstance().loadGoods();
+        GameIdCfg.getInstance().loadGameId();
+    }
+    allCfgLoaded()
+    {
+        return GoodsCfg.getInstance().isLoaded()&&GameIdCfg.getInstance().isLoaded()&&BetCfg.getInstance().isLoaded();
     }
 }

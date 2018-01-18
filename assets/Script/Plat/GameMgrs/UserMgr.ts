@@ -3,25 +3,28 @@ import BaseMgr from "../Libs/BaseMgr";
 
  
 export default class UserMgr extends BaseMgr{
-    myinfo:any = null
+    myinfo:any = {}
     users:{} = null
     routes:{} = null 
     //====== 
     uid:any = null 
     constructor (){
         super(); 
-        this.myinfo=null;
+        this.myinfo={};
         this.users={};
         this.routes={
             'http.reqMyInfo':this.http_reqMyInfo, 
-            'http.reqGetCoin':this.http_reqGetCoin, 
+            'http.reqGetRelief':this.http_reqGetRelief, 
             'http.reqUsers':this.http_reqUsers, 
             'onUserInfoChanged':this.onUserInfoChanged,
             'http.reqRegister':this.http_reqRegister,
             'http.reqLogin':this.http_reqLogin
         }
     }
-    
+    getMyInfo()
+    {
+        return this.myinfo;
+    }
     http_reqRegister(msg)
     {
         this.uid=msg.uid;
@@ -38,15 +41,15 @@ export default class UserMgr extends BaseMgr{
     {
         this.myinfo=msg;
     }
-    http_reqGetCoin(msg)
+    http_reqGetRelief(msg)
     {
         //刷新我的信息
         this.myinfo=msg;
     }
 
-    reqGetCoin()
+    reqGetRelief()
     {
-        this.send_msg('http.reqGetCoin');
+        this.send_msg('http.reqGetRelief');
     }
     //获取我的信息
     reqMyInfo() 
@@ -60,6 +63,8 @@ export default class UserMgr extends BaseMgr{
         let msg={
             'uids':uids,
         }
+        
+        console.log("我娃哦哦额哦按非uids=",uids) 
         this.send_msg('http.reqUsers',msg);
     }
     http_reqUsers(msg)
@@ -79,7 +84,7 @@ export default class UserMgr extends BaseMgr{
     getHeadPng(headid)
     {
         // body
-        return `res/cocosstudio/pics/head/${headid}.png`
+        return `http://192.168.1.190:3000/images/default_${headid}.png`
     } 
  
     //单例处理

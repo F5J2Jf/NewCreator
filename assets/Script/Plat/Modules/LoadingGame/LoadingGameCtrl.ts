@@ -102,20 +102,8 @@ export default class LoadingGameCtrl extends BaseCtrl {
 		//创建mvc模式中模型和视图
 		//控制器
 		ctrl = this;
-		//数据模型
-		this.model = new Model();
-		//视图
-		this.view = new View(this.model);
-		//引用视图的ui
-		this.ui=this.view.ui;
-		//定义网络事件
-		this.defineNetEvents();
-		//定义全局事件
-		this.defineGlobalEvents();
-		//注册所有事件
-		this.regAllEvents()
-		//绑定ui操作
-		this.connectUi();
+		//初始化mvc
+		this.initMvc(Model,View);
 	}
 
 	//定义网络事件
@@ -143,10 +131,7 @@ export default class LoadingGameCtrl extends BaseCtrl {
         setTimeout(()=>{
             this._oneCompleted();
         }, 800);
-        setTimeout(()=>{
-            this._oneCompleted();
-        }, 1500);
-
+        this.reloadMaJiang();
 	}
 	//网络事件回调begin
 	//end
@@ -154,8 +139,15 @@ export default class LoadingGameCtrl extends BaseCtrl {
 	//end
 	//按钮或任何控件操作的回调begin
     //end
+
+    //加载麻将场景资源
+    private reloadMaJiang(){
+        cc.loader.loadResDir("Games/Qzmj", (err, assets)=> {
+            this._oneCompleted();
+        });
+    }
     
-    public _oneCompleted(){
+    private _oneCompleted(){
         let isDone = this.model.doneLoadResNum();
         this.view.updateProgress();
         if(isDone){

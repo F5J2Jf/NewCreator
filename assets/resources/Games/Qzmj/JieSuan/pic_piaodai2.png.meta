@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "8151939f-4ff8-4cd5-b2ea-eaa39489f3d5",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "pic_piaodai2": {
+      "ver": "1.0.3",
+      "uuid": "f40f20d4-1879-4a3b-b04d-f34527bd9503",
+      "rawTextureUuid": "8151939f-4ff8-4cd5-b2ea-eaa39489f3d5",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -2.5,
+      "offsetY": -5.5,
+      "trimX": 71,
+      "trimY": 17,
+      "width": 302,
+      "height": 91,
+      "rawWidth": 449,
+      "rawHeight": 114,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

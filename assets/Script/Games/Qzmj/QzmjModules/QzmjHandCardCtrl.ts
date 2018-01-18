@@ -37,6 +37,7 @@ class Model extends BaseModel{
 	updateLogicId(  ){
 		// body 
 		this.logicseatid=RoomMgr.getInstance().getLogicSeatId(this.seatid); 
+		this.player=QzmjLogic.getInstance().players[this.logicseatid];  
 	} 
 
     recover(  ){
@@ -66,12 +67,12 @@ class View extends BaseView{
 	}
 	//初始化ui
 	initUi()
-	{ 
+	{  
 		this.handcard=[];
 		for(var i = 0;i<14;++i)
-		{ 
-			this.handcard[i]=this.node.getChildByName(`hand_majing_${i}`);
-		} 
+		{  
+			this.handcard.push(this.node.getChildByName(`hand_majiang_${i}`));
+		}  
 		this.clear();
 	} 
 	//恢复游戏
@@ -81,10 +82,10 @@ class View extends BaseView{
 		this.clear();  
 		this.updateCards(true);
 	} 
-	updateCards(bshownewcard=false){ 
+	updateCards(bShowChuPai=false){ 
 		this.updateHandCards();
-		if (bshownewcard){  
-			this.showNewCard();
+		if (bShowChuPai){  
+			this.showChuPai();
 		}
 	}   
  
@@ -95,16 +96,19 @@ class View extends BaseView{
 		}
 	}  
 	updateHandCards(  ){
-		for (var i=0;i<this.model.player.handcard.length;++i){ 
+		for (var i=0;i<this.handcard.length;++i){ 
 			var value=this.model.player.handcard[i];
 			var card=this.handcard[i]; 
+			card.active= (value !=null && value !=undefined);
 		} 	 
 	}
-	showNewCard(  )
+	//显示出牌的
+	showChuPai()
 	{
+		let cardlen=this.model.player.handcard.length;
 		// body  
 		if (this.model.seatid==0){
-
+			
 		}
 		else if(this.model.seatid==1) 
 		{
@@ -165,8 +169,7 @@ export default class QzmjHandCardCtrl extends BaseCtrl {
 	}
 	start () {
 	}
-	//网络事件回调begin
-
+	//网络事件回调begin 
  
 	onSyncData(  )
 	{

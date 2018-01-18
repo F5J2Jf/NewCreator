@@ -66,7 +66,7 @@ export default class GameNet{
 	//tcp请求
 	pomeloReq(route,msg){  
 		pomelo.request(route,msg)
-	}
+	}reqUsers
 	//tcp请求
 	pomeloNotify(route,msg){ 
 		pomelo.notify(route,msg)
@@ -77,12 +77,10 @@ export default class GameNet{
 		if(route=='queResult')//这个是服务器队列添加结果不予理会
 		{
 			return;
-		}
-		console.log("返回的msgcb=",route,resp)
+		} 
 		var errmsg=NetCode.getInstance().check(resp.code)
 		if (errmsg!=null){   
-			FrameMgr.getInstance().showMsgBox(`code=${resp.code},${errmsg}`);
-			console.log('错误信息=',errmsg)
+			FrameMgr.getInstance().showMsgBox(`code=${resp.code},${errmsg}`); 
 			return;
 		}  
 		//刷新管理器的数据 

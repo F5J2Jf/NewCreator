@@ -2,6 +2,7 @@
 import BaseModel from "../../Libs/BaseModel";
 import BaseCtrl from "../../Libs/BaseCtrl";
 import BaseView from "../../Libs/BaseView";
+import PlatMgr from "../../GameMgrs/PlatMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
@@ -64,26 +65,27 @@ export default class LoginCtrl extends BaseCtrl {
 		//创建mvc模式中模型和视图
 		//控制器
 		ctrl = this;
-		//数据模型
-		this.model = new Model();
-		//视图
-		this.view = new View(this.model);
-		//引用视图的ui
-		this.ui=this.view.ui;
-		//定义网络事件
-		this.defineNetEvents();
-		//定义全局事件
-		this.defineGlobalEvents();
-		//注册所有事件
-		this.regAllEvents()
-		//绑定ui操作
-		this.connectUi();
+		//初始化mvc
+		this.initMvc(Model,View); 
 	}
 
 	//定义网络事件
 	defineNetEvents()
+	{ 
+        this.n_events = {
+			'http.reqMyRoomState':this.http_reqMyRoomState,   
+			'http.reqRoomEntry':this.http_reqRoomEntry,
+        }
+	}
+	
+	http_reqRoomEntry()
 	{
-
+		//请求进入房间的回调 
+		this.start_module(G_MODULE.LoadingGame)
+	}
+	http_reqMyRoomState(msg)
+	{
+		
 	}
 	//定义全局事件
 	defineGlobalEvents()
@@ -105,7 +107,11 @@ export default class LoginCtrl extends BaseCtrl {
 		// this.connect(G_UiType.image,this.ui.btn_friend,this.btn_friend_cb,"牌友");
 		// this.connect(G_UiType.image,this.ui.btn_box,this.btn_box_cb,"包厢");
 	}
+	initPlatFinish(){  
+	}
 	start () {
+		//在这里去获取平台相关信息
+		PlatMgr.getInstance().initPlat(this.initPlatFinish.bind(this));
 	}
 	//网络事件回调begin
  

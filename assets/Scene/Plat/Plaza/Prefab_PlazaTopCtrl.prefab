@@ -1169,7 +1169,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "lab_money",
+    "_name": "lab_coin",
     "_objFlags": 0,
     "_parent": {
       "__id__": 31
@@ -1202,7 +1202,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 144,
+      "width": 16,
       "height": 18
     },
     "_rotationX": 0,
@@ -1239,7 +1239,7 @@
     },
     "_isSystemFontUsed": false,
     "_spacingX": 0,
-    "_N$string": "123456789",
+    "_N$string": "0",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -1570,7 +1570,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "lab_money",
+    "_name": "lab_gold",
     "_objFlags": 0,
     "_parent": {
       "__id__": 44
@@ -1603,7 +1603,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 144,
+      "width": 16,
       "height": 18
     },
     "_rotationX": 0,
@@ -1640,7 +1640,7 @@
     },
     "_isSystemFontUsed": false,
     "_spacingX": 0,
-    "_N$string": "123456789",
+    "_N$string": "0",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -1851,10 +1851,10 @@
     "lab_lv": {
       "__id__": 16
     },
-    "lab_leftMoney": {
+    "lab_coin": {
       "__id__": 37
     },
-    "lab_rightMoney": {
+    "lab_gold": {
       "__id__": 50
     }
   },

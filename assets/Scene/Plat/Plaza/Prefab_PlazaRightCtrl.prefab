@@ -624,15 +624,16 @@
       "__id__": 1
     },
     "_enabled": true,
-    "node_quanzhou1": {
+    "CreateRoom": {
       "__id__": 2
     },
     "node_quanzhou2": {
       "__id__": 8
     },
-    "node_quanzhou3": {
+    "JoinRoomBtn": {
       "__id__": 14
-    }
+    },
+    "GoldModeBtn": null
   },
   {
     "__type__": "cc.PrefabInfo",

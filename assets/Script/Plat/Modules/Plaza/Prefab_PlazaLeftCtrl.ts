@@ -45,6 +45,12 @@ export default class NodeLeftCtrl extends BaseControl {
 
 	@property(cc.Node)
 	btn_first_punch:cc.Node = null;
+	
+    @property({
+		tooltip : "金币场按钮",
+		type : cc.Node
+	})
+    GoldModeBtn : cc.Node = null;
 
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
@@ -54,20 +60,8 @@ export default class NodeLeftCtrl extends BaseControl {
 		//创建mvc模式中模型和视图
 		//控制器
 		ctrl = this;
-		//数据模型
-		this.model = new Model();
-		//视图
-		this.view = new View(this.model);
-		//引用视图的ui
-		this.ui=this.view.ui;
-		//定义网络事件
-		this.defineNetEvents();
-		//定义全局事件
-		this.defineGlobalEvents();
-		//注册所有事件
-		this.regAllEvents()
-		//绑定ui操作
-		this.connectUi();
+		//初始化mvc
+		this.initMvc(Model,View);
 	}
 
 	//定义网络事件
@@ -84,6 +78,7 @@ export default class NodeLeftCtrl extends BaseControl {
 	{
 		this.connect(G_UiType.image,this.ui.btn_sign,this.btn_sign_cb,"签到");
 		this.connect(G_UiType.image,this.ui.btn_first_punch,this.btn_first_punch_cb,"首冲");
+		this.connect(G_UiType.image,this.GoldModeBtn,this.GoldModeBtn_cb,"金币场");
 	}
 	start () {
 	}
@@ -94,9 +89,13 @@ export default class NodeLeftCtrl extends BaseControl {
 	//按钮或任何控件操作的回调begin
 	btn_sign_cb(node,event){
 		console.log("btn_sign_cb");
+		this.start_sub_module(G_MODULE.SignIn);
 	}
 	btn_first_punch_cb(node,event){
 		console.log("btn_first_punch_cb");
+	}
+	GoldModeBtn_cb(node,event){
+		this.start_sub_module(G_MODULE.GoldMode);
 	}
 	//end
 }
