@@ -186,6 +186,7 @@ export default class QzmjHandCardCtrl extends BaseCtrl {
 		// body
 		this.model.clear();
 		this.view.clear();
+		this.model.updateLogicId(); 
 	} 
 	onOp(msg) 
 	{
@@ -261,7 +262,6 @@ export default class QzmjHandCardCtrl extends BaseCtrl {
 		if (this.model.seatid==0){ 
 			return
 		}
-		this.model.updateLogicId(); 
 		this.view.fapai()  
 	}
 	//end

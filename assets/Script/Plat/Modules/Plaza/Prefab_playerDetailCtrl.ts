@@ -159,7 +159,7 @@ class View extends BaseView{
         this.ui.lab_iphone.string = this.model.attr_iphone;
     }
     //1man, 2womon, 3保密
-    private updateSex(){
+    updateSex(){
         switch(this.model.myInfo.sex){
             case 1:
                 //man
@@ -296,8 +296,8 @@ export default class Prefab_playerDetailCtrl extends BaseCtrl {
         this.connect(G_UiType.image,this.node_btn_realyName,this.node_btn_realyName_cb,"点击实名");
         this.connect(G_UiType.image,this.node_btn_address,this.node_btn_address_cb,"点击地址");
         this.connect(G_UiType.image,this.node_btn_iphone,this.node_btn_iphone_cb,"点击电话");
-        // this.connect(G_UiType.image,this.node_sexMan,this.node_sexMan_cb,"点击性别男");
-        // this.connect(G_UiType.image,this.node_sexWomen,this.node_sexWomen_cb,"点击性别女");
+        this.connect(G_UiType.image,this.node_sexMan,this.node_sexMan_cb,"点击性别男");
+        this.connect(G_UiType.image,this.node_sexWomen,this.node_sexWomen_cb,"点击性别女");
 	}
 	start () {
         this.updateInfo();
@@ -317,9 +317,11 @@ export default class Prefab_playerDetailCtrl extends BaseCtrl {
     }
     private node_btn_nickName_cb(){
         console.log('node_btn_nickName_cb')
+        this.start_sub_module(G_MODULE.changeName);
     }
     private node_btn_realyName_cb(){
         console.log('node_btn_realyName_cb')
+        this.start_sub_module(G_MODULE.shimingRenZheng);
     }
     private node_btn_address_cb(){
         console.log('node_btn_address_cb')
@@ -327,14 +329,16 @@ export default class Prefab_playerDetailCtrl extends BaseCtrl {
     private node_btn_iphone_cb(){
         console.log('node_btn_iphone_cb')
     }
-    // private node_sexMan_cb(){
-    //     console.log('node_sexMan_cb')
-    //     this.view.chooseSex(1);
-    // }
-    // private node_sexWomen_cb(){
-    //     console.log('node_sexWomen_cb')
-    //     this.view.chooseSex(2);
-    // }
+    private node_sexMan_cb(){
+        console.log('node_sexMan_cb')
+        this.model.myInfo.sex = 1
+        this.view.updateSex();
+    }
+    private node_sexWomen_cb(){
+        console.log('node_sexWomen_cb')
+        this.model.myInfo.sex = 2;
+        this.view.updateSex();
+    }
     //end
     
     public updateInfo (){

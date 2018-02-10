@@ -13,7 +13,7 @@ export default class BaseCfg{
         cc.loader.loadRes(name, function (err, data) {
             if(err)
             {
-                console.log("cc.loader.loadRes err=",err)
+                console.log(`cc.loader.loadRes err=,${JSON.stringify(err)},${name}`)
             }
             else
             {

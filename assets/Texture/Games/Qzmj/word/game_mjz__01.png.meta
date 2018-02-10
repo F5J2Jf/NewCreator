@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "a0db0551-20a6-4f53-abf6-7f606c00cfae",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "game_mjz__01": {
+      "ver": "1.0.3",
+      "uuid": "89131df0-d80b-49c6-832a-d0b6fbb641af",
+      "rawTextureUuid": "a0db0551-20a6-4f53-abf6-7f606c00cfae",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": 0,
+      "trimX": 1,
+      "trimY": 0,
+      "width": 40,
+      "height": 51,
+      "rawWidth": 41,
+      "rawHeight": 51,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -5,6 +5,8 @@ author: YOYO
 import BaseModel from "../../Libs/BaseModel";
 import BaseView from "../../Libs/BaseView";
 import BaseCtrl from "../../Libs/BaseCtrl";
+import QzmjEntry from "../../../Games/Qzmj/QzmjEntry";
+import BetMgr from "../../GameMgrs/BetMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
@@ -131,7 +133,17 @@ export default class LoadingGameCtrl extends BaseCtrl {
         setTimeout(()=>{
             this._oneCompleted();
         }, 800);
-        this.reloadMaJiang();
+        switch(BetMgr.getInstance().getGameId()){
+            case 1:
+                this.reloadMaJiang();
+                break
+            case 4:
+                this.reloadBull();
+                break
+            default:
+                break
+        }
+        
 	}
 	//网络事件回调begin
 	//end
@@ -142,9 +154,27 @@ export default class LoadingGameCtrl extends BaseCtrl {
 
     //加载麻将场景资源
     private reloadMaJiang(){
-        cc.loader.loadResDir("Games/Qzmj", (err, assets)=> {
-            this._oneCompleted();
+        cc.director.preloadScene(G_MODULE.QzmjRoom, (err)=> {
+            if(err){
+                cc.error(err);
+            }else{
+                cc.loader.loadResDir("Games/Qzmj", (err, assets)=> {
+                    this._oneCompleted();
+                });
+            }
         });
+        
+    }
+    //加载牛牛资源
+    private reloadBull(){
+        cc.director.preloadScene(G_MODULE.BullRoom, (err)=> {
+            if(err){
+                cc.error(err);
+            }else{
+                this._oneCompleted();
+            }
+        });
+        
     }
     
     private _oneCompleted(){
@@ -157,6 +187,22 @@ export default class LoadingGameCtrl extends BaseCtrl {
     }
     //加载资源完成
     private _loadDone(){
-        this.start_module(G_MODULE.QzmjRoom)
+        QzmjEntry.getInstance().registerModules();
+        this.start_module(this.getLoadSceneName())
+    }
+
+    private getLoadSceneName ():string{
+        let loadName:string = "";
+        switch(BetMgr.getInstance().getGameId()){
+            case 1:
+                loadName = G_MODULE.QzmjRoom;
+                break
+            case 4:
+                loadName = G_MODULE.BullRoom;
+                break
+            default:
+                break
+        }
+        return loadName;
     }
 }

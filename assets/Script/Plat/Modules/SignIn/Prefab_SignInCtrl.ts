@@ -71,6 +71,7 @@ class View extends BaseView{
 		this.node=ctrl.node;
 		this.model=model;
 		this.initUi();
+		this.addGrayLayer();
 	}
 	//初始化ui
 	initUi()

@@ -5,9 +5,9 @@ import BetCfg from "../CfgMgrs/BetCfg";
  
  
 export default class BetMgr extends BaseMgr{
-    private betType = 1;
-    private gameId = 1;
-    private seatCount=4;
+    private betType = null;
+    private gameId = null;
+    private seatCount=null;
     //单例处理
     constructor(){
         super();
@@ -19,6 +19,18 @@ export default class BetMgr extends BaseMgr{
         }
         return this._instance;
     }
+
+    setGameId(gameId:number){
+        this.gameId = gameId;
+    }
+    setBetType(bettype:number)
+    {
+        this.betType=bettype;
+    }
+    setSeatCount(seatCount:number){
+        this.seatCount;
+    }
+
     getGameId(){
         return this.gameId;
     }

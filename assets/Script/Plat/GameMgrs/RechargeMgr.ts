@@ -38,10 +38,11 @@ export default class RechargeMgr extends BaseMgr{
     } 
     //goodstype:1表示钻石/元宝 2表示房卡，3表示金币
     //goodsid是列表中的id
-    reqBuyGoods(goodstype,goodsid){
+    reqBuyGoods(goodstype,goodsid,goodnum){
         let goodsinfo={
             'goodstype':goodstype, 
             'goodsid':goodsid, 
+            'goodnum':goodnum,
         }
         this.send_msg('http.reqBuyGoods',goodsinfo);
     }

@@ -6,6 +6,10 @@ import BaseCtrl from "../../Libs/BaseCtrl";
 import BaseView from "../../Libs/BaseView";
 import BaseModel from "../../Libs/BaseModel";
 import BetCfg from "../../CfgMgrs/BetCfg";
+import BetMgr from "../../GameMgrs/BetMgr";
+import VerifyMgr from "../../GameMgrs/VerifyMgr";
+import RoomMgr from "../../GameMgrs/RoomMgr";
+import GameIdCfg from "../../CfgMgrs/GameIdCfg";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
@@ -39,6 +43,7 @@ class View extends BaseView{
 		this.node=ctrl.node;
 		this.model = model;
 		this.initUi();
+		this.addGrayLayer();
 	}
 	//初始化ui
 	initUi()
@@ -57,7 +62,7 @@ class View extends BaseView{
 			arr[id].getChildByName("label_EndPoints").getComponent(cc.Label).string = _jbc.base.dizhu;
 			arr[id].getChildByName("label_Name").getComponent(cc.Label).string = _jbc.base.name;
 		}
-	}
+    }
 }
 //c, 控制
 @ccclass
@@ -152,23 +157,54 @@ export default class Prefab_GoldModeCtrl extends BaseCtrl {
 	private CloseBtn_cb () : void {
 		this.finish();
 	}
+	//菜鸟
 	private RookieBtn_cb () : void {
-
+		BetMgr.getInstance().setBetType(1);
+		this.JoinGoldRoom();
 	}
+	//平民
 	private CiviliansBtn_cb () : void {
-
+		BetMgr.getInstance().setBetType(2);
+		this.JoinGoldRoom();
 	}
+	//土豪
 	private LocalTyrantsBtn_cb () : void {
+		BetMgr.getInstance().setBetType(3);
 
+		this.JoinGoldRoom();
 	}
+	//菜鸟无赖子
 	private RookieNoneBtn_cb () : void {
-
+		BetMgr.getInstance().setBetType(4);
+		this.JoinGoldRoom();
 	}
+	//官甲
 	private OfficerBtn_cb () : void {
-
+		BetMgr.getInstance().setBetType(5);
+		this.JoinGoldRoom();
 	}
+	//富商
 	private BusinessmanBtn_cb () : void {
-
+		BetMgr.getInstance().setBetType(6);
+		this.JoinGoldRoom();
 	}
-	//end
+
+	private JoinGoldRoom () : void {
+        BetMgr.getInstance().setGameId(this.model.gameId); 
+		//在本地先判断下是否有足够金币加入金币场
+		var ret=VerifyMgr.getInstance().checkCoin();
+		if(!ret)
+		{
+			return;
+		}
+        //在这边验证加入 
+        //金币场，直接从配置中读取座位数
+        RoomMgr.getInstance().reqRoomVerify(); 
+	}
+    //end
+    
+    //设置游戏id
+    setGameID (gameid:number){
+        this.model.gameId = gameid;
+    }
 }

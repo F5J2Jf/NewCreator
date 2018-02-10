@@ -46,11 +46,11 @@ export default class NodeLeftCtrl extends BaseControl {
 	@property(cc.Node)
 	btn_first_punch:cc.Node = null;
 	
-    @property({
-		tooltip : "金币场按钮",
-		type : cc.Node
-	})
-    GoldModeBtn : cc.Node = null;
+    // @property({
+	// 	tooltip : "金币场按钮",
+	// 	type : cc.Node
+	// })
+    // GoldModeBtn : cc.Node = null;
 
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
@@ -78,7 +78,7 @@ export default class NodeLeftCtrl extends BaseControl {
 	{
 		this.connect(G_UiType.image,this.ui.btn_sign,this.btn_sign_cb,"签到");
 		this.connect(G_UiType.image,this.ui.btn_first_punch,this.btn_first_punch_cb,"首冲");
-		this.connect(G_UiType.image,this.GoldModeBtn,this.GoldModeBtn_cb,"金币场");
+		// this.connect(G_UiType.image,this.GoldModeBtn,this.GoldModeBtn_cb,"金币场");
 	}
 	start () {
 	}
@@ -94,8 +94,8 @@ export default class NodeLeftCtrl extends BaseControl {
 	btn_first_punch_cb(node,event){
 		console.log("btn_first_punch_cb");
 	}
-	GoldModeBtn_cb(node,event){
-		this.start_sub_module(G_MODULE.GoldMode);
-	}
+	// GoldModeBtn_cb(node,event){
+	// 	this.start_sub_module(G_MODULE.GoldMode);
+	// }
 	//end
 }

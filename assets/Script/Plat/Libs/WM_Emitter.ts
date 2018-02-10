@@ -44,25 +44,19 @@ export default class WM_Emitter
             var event_item=this.m_listen_list[index]
             if(event_item.m_id==id)
             {
-                this.m_listen_list.slice(index,1); 
+                this.m_listen_list.remove(index); 
             }  
         }
     } 
-    remove_by_listener(listenler){  
-        var done=true;
-        while(true){ 
-            for (var index = 0 ;index<this.m_listen_list.length;index++)
+    //注意这里的写法，要检查
+    remove_by_listener(listenler){   
+        for (var index = this.m_listen_list.length -1;index>=0;index--)
+        {
+            var event_item=this.m_listen_list[index] 
+            if(event_item.m_listenler==listenler)
             {
-                var event_item=this.m_listen_list[index]
-                if(event_item.m_listener==listenler)
-                {
-                    this.m_listen_list.slice(index,1); 
-                    done=false;
-                }
-                if(done){
-                    break;
-                }  
-            }
+                this.m_listen_list.remove(index);  
+            } 
         } 
     } 
     clear()

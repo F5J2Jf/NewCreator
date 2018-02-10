@@ -113,7 +113,7 @@ class View extends BaseView{
 		this.node.active=true;
 		var userinfo=this.model.userinfo
         UiMgr.getInstance().setUserHead(this.ui.img_head, userinfo.headid, userinfo.headurl);
-		this.ui.lbl_nickname.string=userinfo.nickname
+		this.ui.lbl_nickname.string=this.model.logicseatid;
 	} 
 	showHua()
 	{
@@ -177,7 +177,7 @@ export default class QzmjSeatCtrl extends BaseCtrl {
 	//绑定操作的回调
 	connectUi()
 	{
-		// this.connect(G_UiType.image,this.ui.img_headframe,this.showUserDetail,'显示用户详情') 
+		this.connect(G_UiType.image,this.ui.img_head,this.showUserDetail,'显示用户详情') 
      
 	}
 	start () {
@@ -272,8 +272,10 @@ export default class QzmjSeatCtrl extends BaseCtrl {
 	{
 		// body
 		if (this.model.uid!=null){ 
-			// var ctrl=this.start_sub_module(platmodule.userdetail)
-			// ctrl.setUid(this.model.uid)
+			var ctrl=this.start_sub_module(G_MODULE.mj_playerInfo, (uiCtrl)=>{
+				this.model.userinfo['seatId'] = this.model.logicseatid;
+                uiCtrl.setInfo(this.model.userinfo);
+            })
 		}
 	} 
 }

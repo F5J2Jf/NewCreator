@@ -24,6 +24,7 @@ class Model extends BaseModel{
 	logicseatid=null;
 	player=null;
 	opcards=null;
+	mySeatID=null;
 	constructor()
 	{
 		super();
@@ -37,6 +38,7 @@ class Model extends BaseModel{
 		// body 
 		this.logicseatid=RoomMgr.getInstance().getLogicSeatId(this.seatid);
 		this.player=QzmjLogic.getInstance().players[this.logicseatid]; 
+		this.mySeatID=RoomMgr.getInstance().getMySeatId();
 	}
 	recover(  ){
 		// body
@@ -65,7 +67,7 @@ class View extends BaseView{
 	initUi()
 	{ 
 		this.doorCardPanel=[];
-		for(var i = 0;i<4;++i)
+		for(var i = 0;i<5;++i)
 		{  
 			this.doorCardPanel.push(this.node.getChildByName(`DoorMaJiang_${i}`)); 
 		}  
@@ -92,7 +94,7 @@ class View extends BaseView{
 				var card=panel.getChildByName(`MaJiang_${i}`);
 				card.active=true;
 				var sign=card.getChildByName('sign');
-				let texture = QzmjResMgr.getInstance().getCardTextureByValue(value);
+				let texture = QzmjResMgr.getInstance().get3DCardTextureByValue(value);
 				let frame = new cc.SpriteFrame(texture);
 				sign.getComponent(cc.Sprite).spriteFrame = frame;    
 			}
@@ -105,7 +107,7 @@ class View extends BaseView{
 				var card=panel.getChildByName(`MaJiang_${i}`);
 				card.active=true;
 				var sign=card.getChildByName('sign');
-				let texture = QzmjResMgr.getInstance().getCardTextureByValue(value);
+				let texture = QzmjResMgr.getInstance().get3DCardTextureByValue(value);
 				let frame = new cc.SpriteFrame(texture);
 				sign.getComponent(cc.Sprite).spriteFrame = frame;     
 			}
@@ -118,7 +120,7 @@ class View extends BaseView{
 				var card=panel.getChildByName(`MaJiang_${i}`);
 				card.active=true;
 				var sign=card.getChildByName('sign');
-				let texture = QzmjResMgr.getInstance().getCardTextureByValue(value);
+				let texture = QzmjResMgr.getInstance().get3DCardTextureByValue(value);
 				let frame = new cc.SpriteFrame(texture);
 				sign.getComponent(cc.Sprite).spriteFrame = frame;  
 			}
@@ -129,9 +131,13 @@ class View extends BaseView{
 				var card=panel.getChildByName(`MaJiang_${i}`);
 				card.active=true;
 				var sign=card.getChildByName('sign');
-				let texture = QzmjResMgr.getInstance().getCardTextureByValue(value);
+				var majingBg = card.getChildByName("majingBg");
+				let flag = i==3 && this.model.logicseatid == this.model.mySeatID;
+				sign.active = flag;
+				let texture = QzmjResMgr.getInstance().get3DCardTextureByValue(flag ? value : 666);
 				let frame = new cc.SpriteFrame(texture);
-				sign.getComponent(cc.Sprite).spriteFrame = frame;      
+				let spriteNode = flag ? sign : majingBg;
+				spriteNode.getComponent(cc.Sprite).spriteFrame = frame;
 			}  
 		} 
 	}
@@ -146,7 +152,7 @@ class View extends BaseView{
 		// body  
 		for(var i = 0;i<this.doorCardPanel.length;++i)
 		{  
-			this.doorCardPanel[i].active=false;
+			// this.doorCardPanel[i].active=false;
 		} 
 	} 
 	 
@@ -209,11 +215,15 @@ export default class QzmjDoorCardCtrl extends BaseCtrl {
 			return;
 		} 
 		var op=QzmjDef.op_cfg[msg.event]
-		if (op == QzmjDef.op_chupai ||
-		   op == QzmjDef.op_hu || 
-		   op == QzmjDef.op_zimo ){
-			return;
-		} 
+		//忽略列表
+		let ignoreOps=[QzmjDef.op_chupai,QzmjDef.op_hu,QzmjDef.op_zimo,QzmjDef.op_danyou,QzmjDef.op_shuangyou,QzmjDef.op_sanyou,
+			QzmjDef.op_bazhanghua,QzmjDef.op_sanjiindao]
+		for(let i = 0;i<ignoreOps.length;++i)
+		{
+			if(ignoreOps[i]==op){
+				return;
+			}
+		}
 	
 		this.model.opcards=this.model.player.opcards;
 		this.view.updateCards();

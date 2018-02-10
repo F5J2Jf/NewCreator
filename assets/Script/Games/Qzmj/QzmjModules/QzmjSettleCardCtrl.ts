@@ -39,12 +39,14 @@ class View extends BaseView{
 	//初始化ui
 	initUi()
 	{
+
 	}
 }
 //c, 控制
 @ccclass
 export default class QzmjSettleCardCtrl extends BaseCtrl {
 	//这边去声明ui组件
+
 
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离

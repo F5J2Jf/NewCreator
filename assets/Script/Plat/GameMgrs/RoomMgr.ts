@@ -3,6 +3,7 @@ import UserMgr from "./UserMgr";
 import BetMgr from "./BetMgr";
 import LoginMgr from "./LoginMgr";
 import VerifyMgr from "./VerifyMgr";
+import YySdkMgr from "../SdkMgrs/YySdk";
 
 /**
  * VerifyMgr
@@ -12,18 +13,20 @@ import VerifyMgr from "./VerifyMgr";
  * gfun
  * 
  */
- 
-const STATE = cc.Enum({
-    nomal : "state_nomal",//从房间外进来，直接走准备
-    fangka : "state_fangka",//从房间外进入房卡
-    stayinroom : "state_stayinroom",//在房间中呆着
-    oncemore : "state_oncemore",//再来一局
-    recover : "state_recover",//恢复
-    ownerrecover : "state_ownerrecover",//房主恢复
-})
- 
+
+enum G_ROOMSTATE
+{
+    nomal=1, 
+    fangka,
+    stayinroom,
+    oncemore,
+    recover,
+    ownerrecover,
+} 
+window['G_ROOMSTATE']=G_ROOMSTATE; 
+  
 export default class RoomMgr extends BaseMgr{
-    roomstate:string = null
+    roomstate:G_ROOMSTATE = null
     roominfo = null
     roomtype:number = null                        //0表示金币场1表示房卡
   
@@ -34,13 +37,10 @@ export default class RoomMgr extends BaseMgr{
     preparemap={}
     myseatid:any = null
     bGameIsStated:Boolean = null
-    rid:any = null
-    gameid:any = null
-    bettype:any = null
+    rid:any = null  
     constructor (){
         super();
         
-        this.roomstate=STATE.nomal;  
         this.roominfo=null;
         this.roomtype=0;
         this.resetData();
@@ -79,8 +79,9 @@ export default class RoomMgr extends BaseMgr{
 
     //===================所有的请求回调
     http_reqFangKaEntry(msg)
-    {
-
+    { 
+        this.rid=msg.rid; 
+        this.roomstate=G_ROOMSTATE.fangka;
     }
     http_reqSettle()
     {
@@ -89,7 +90,6 @@ export default class RoomMgr extends BaseMgr{
     //重新进房卡房间
     reqEnterMyFangKaRoom()
     {
-        this.roomstate=STATE.ownerrecover;
         this.send_msg('http.reqEnterMyFangKaRoom');//获取我的房间状态
     }
     http_reqDisbandRoom()
@@ -107,7 +107,7 @@ export default class RoomMgr extends BaseMgr{
  
     http_reqEnterMyFangKaRoom()
     {
-        this.enterRoom();
+        this.roomstate=G_ROOMSTATE.ownerrecover; 
     }
     reqFangKaEntry()
     {
@@ -119,7 +119,6 @@ export default class RoomMgr extends BaseMgr{
     }
     reqFangKaVerify(password)
     {
-        this.roomstate=STATE.fangka;
         this.password=password;
         let msg={
             'password':password,
@@ -140,6 +139,7 @@ export default class RoomMgr extends BaseMgr{
     }
     room_roomHandler_stayInRoom(msg)
     {
+        this.roomstate=G_ROOMSTATE.stayinroom;
         this.reqRoomUsers();
     }
     room_roomHandler_reEnterRoom(msg)
@@ -156,11 +156,8 @@ export default class RoomMgr extends BaseMgr{
         }
     }
     reqRoomInfo()
-    {
-        let msg={
-            'rid':this.rid,
-        }
-        this.send_msg('http.reqRoomInfo',msg);//获取房间信息
+    { 
+        this.send_msg('http.reqRoomInfo');//获取房间信息
     } 
     //麻将进度
     onStartGame(msg) 
@@ -176,15 +173,13 @@ export default class RoomMgr extends BaseMgr{
     //返回房间桌面
     backToRoom()
     {
-        this.roomstate=STATE.stayinroom;
         this.send_msg('room.roomHandler.stayInRoom');//留在房间中
     }
     //再来一局
     onceMore(){
-        // body
-        VerifyMgr
+        // body 
         if(this.roomtype==0){  
-            let ret=VerifyMgr.getInstance().checkCoin(BetMgr.getInstance().getGameId(),BetMgr.getInstance().getBetType())  
+            let ret=VerifyMgr.getInstance().checkCoin()  
             if(ret){
                 this.reqRoomVerifyOnceMore();
             }
@@ -208,13 +203,11 @@ export default class RoomMgr extends BaseMgr{
     //验证再来一局
     reqRoomVerifyOnceMore()
     {
-        this.roomstate=STATE.oncemore;
         this.send_msg('http.reqRoomVerifyOnceMore');
     }
     //验证再来一局
     reqFangKaVerifyOnceMore()
     {
-        this.roomstate=STATE.oncemore;
         this.send_msg('http.reqFangKaVerifyOnceMore');
     }
     onPrepare(msg)
@@ -224,8 +217,7 @@ export default class RoomMgr extends BaseMgr{
     }
     recoverRoom()
     {
-        // body 
-        this.roomstate=STATE.recover;
+        // body  
         this.send_msg('connector.entryHandler.recoverRoom');
     }
     connector_entryHandler_recoverRoom(msg:any)
@@ -262,8 +254,7 @@ export default class RoomMgr extends BaseMgr{
     {
         // body
         this.users={};
-        this.preparemap={};
-        this.gameid=null;
+        this.preparemap={}; 
         var uids=[]
          
         for(var i=0;i<msg.users.length;++i)
@@ -302,6 +293,7 @@ export default class RoomMgr extends BaseMgr{
     {
         // body
         this.send_msg('http.reqExitRoom');
+        YySdkMgr.getInstance().LeaveRoom();
     } 
     
     getLogicSeatId(target_seatid)
@@ -320,12 +312,12 @@ export default class RoomMgr extends BaseMgr{
 
 
     reqRoomVerify() 
-    {
-        this.roomstate=STATE.nomal;   
+    { 
+        this.roomstate=G_ROOMSTATE.nomal;   
         let msg={
             'gameid':BetMgr.getInstance().getGameId(),
             'bettype':BetMgr.getInstance().getBetType(),
-            'seatcount':BetMgr.getInstance().getSeatCount(),
+            'seatcount':4,
         }
         this.send_msg('http.reqRoomVerify',msg);
     }
@@ -352,28 +344,37 @@ export default class RoomMgr extends BaseMgr{
     {
         this.send_msg('http.reqRoomRecover');
     }
-    http_reqRoomRecover()
+    http_reqRoomRecover(msg)
     {
+        //恢复游戏要知道是哪个游戏
+        let betinfo=msg.betinfo;
+        BetMgr.getInstance().setGameId(betinfo.gameid);
+        BetMgr.getInstance().setBetType(betinfo.bettype);
         // body 
-        this.recoverRoom();
+        //恢复游戏这里应该还要服务器补充游戏id的参数
+        this.roomstate=G_ROOMSTATE.recover;   
     }
 
     http_reqCreateFangKaRoom(msg)
     {
         //获得web服务器上房间分配后,就进入pomelo服务器 
-        this.enterRoom();
+        this.roomstate=G_ROOMSTATE.fangka;  
+        this.rid=msg.rid; 
     }
     http_reqRoomEntryOnceMore(msg)
     {
+        this.roomstate=G_ROOMSTATE.oncemore;
         this.reEnterRoom();
     }
     http_reqFangKaEntryOnceMore(msg)
     {
+        this.roomstate=G_ROOMSTATE.oncemore;
         this.reEnterRoom();
     }
     http_reqRoomEntry(msg)
     {
         //获得web服务器上房间分配后,就进入pomelo服务器 
+        this.roomstate=G_ROOMSTATE.nomal;  
         this.rid=msg.rid; 
     }
     reEnterRoom()
@@ -389,21 +390,27 @@ export default class RoomMgr extends BaseMgr{
     
     connector_entryHandler_enterRoom(msg)
     { 
+        this.startYaYaSdk();
         this.reqRoomUsers();
     }
     http_reqRoomUsers(msg)
     {
-        //获得web服务器上房间分配后,就进入pomelo服务器 
+        
         this.updateRoomUsers(msg)
-        this.reqRoomInfo();
+        this.reqRoomInfo(); 
+        //判断房间状态自动准备
+		switch(this.roomstate)
+		{
+			case G_ROOMSTATE.nomal:
+            case G_ROOMSTATE.oncemore: 
+                this.reqPrepare();//
+            break;
+		} 
     }
     reqRoomUsers()
     {
-        this.resetData();
-        let msg={
-            'rid':this.rid,
-        }
-        this.send_msg('http.reqRoomUsers',msg);
+        this.resetData(); 
+        this.send_msg('http.reqRoomUsers');
     } 
 
     reqCreateFangKaRoom()
@@ -417,7 +424,17 @@ export default class RoomMgr extends BaseMgr{
         //收到保存成功后就刷新最新的设置  
         this.reqCreateFangKaRoom(); 
     } 
- 
+    reqCreateFangKaVerify()
+    {  
+        var msg={
+            'gameid':BetMgr.getInstance().getGameId()
+        }
+        this.send_msg('http.reqCreateFangKaVerify',msg)  
+    }
+    startYaYaSdk () {
+		let userinfo = UserMgr.getInstance().getMyInfo();
+		YySdkMgr.getInstance().InitYaYaSdk(userinfo.id, userinfo.nickname, this.rid);
+    }
     //单例处理
     private static _instance:RoomMgr
     public static getInstance ():RoomMgr{

@@ -7,6 +7,7 @@ import BaseView from "../../Libs/BaseView";
 import BaseModel from "../../Libs/BaseModel";
 import UiMgr from "../../GameMgrs/UiMgr";
 import ModuleMgr from "../../GameMgrs/ModuleMgr";
+import RoomMgr from "../../GameMgrs/RoomMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
@@ -29,6 +30,7 @@ class View extends BaseView{
 		super(model);
 		this.node=ctrl.node;
 		this.initUi();
+		this.addGrayLayer();
 	}
 	//初始化ui
 	initUi()
@@ -56,6 +58,12 @@ export default class Prefab_AddRoomCtrl extends BaseControl {
 		type : cc.Label
 	})
 	Label_RoomId : cc.Label = null;
+
+	@property({
+		tooltip : "加入房间",
+		type : cc.Node
+	})
+	JoinRoom : cc.Node = null;
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
 
@@ -93,6 +101,7 @@ export default class Prefab_AddRoomCtrl extends BaseControl {
 	connectUi()
 	{
 		this.connect(G_UiType.image, this.CloseBtn, this.CloseBtn_cb, "关闭按钮");
+		this.connect(G_UiType.image, this.JoinRoom, this.JoinRoom_cb, "加入房间按钮");
 		let keys = this.KeyBtn.children;
 		for (let i in keys) {
 			if (keys[i] instanceof cc.Node) this.connect(G_UiType.image, keys[i], this.Keys_cb, "键盘按钮");			
@@ -121,6 +130,15 @@ export default class Prefab_AddRoomCtrl extends BaseControl {
 			if (this.Label_RoomId.string.length >= 6) return//限制房间号，只能6位数
 			this.Label_RoomId.string = string + key;
 		}
+	}
+
+	//加入房间
+	private JoinRoom_cb () : void {
+		let roomId = this.Label_RoomId.string;
+		if (roomId.length < 6) {
+			return;
+		}
+		RoomMgr.getInstance().reqFangKaVerify(roomId);
 	}
 	//end
 }

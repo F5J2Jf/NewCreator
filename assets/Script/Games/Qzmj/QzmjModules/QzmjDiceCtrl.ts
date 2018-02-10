@@ -22,6 +22,8 @@ class Model extends BaseModel{
 	list=null;
 	step=null;
 	totalstep=null;
+	dice1Value=null;
+	dice2Value=null;
 	constructor()
 	{
 		super();
@@ -42,6 +44,10 @@ class Model extends BaseModel{
 		}
 		this.list.push(finalpoint); 
 	}
+	initDices(data){
+		this.dice1Value=Number(data.touzi1);
+		this.dice2Value=Number(data.touzi2);
+	}
 	clear(){
 		// body
 		this.list=[];
@@ -55,6 +61,7 @@ class View extends BaseView{
 		//在这里声明ui
 		Dice1:null,
 		Dice2:null,
+		DiceList:null
 	};
 	node=null;
 	constructor(model){
@@ -65,15 +72,40 @@ class View extends BaseView{
 	//初始化ui
 	initUi()
 	{
+		this.ui.Dice1=ctrl.Dice1;
+		this.ui.Dice2=ctrl.Dice2;
+		this.ui.DiceList=ctrl.DiceList;
 		this.node.active=false;
+		this.ui.Dice1.getComponent('cc.Animation').on('finished', this.onDice1Finished, this);
+		this.ui.Dice2.getComponent('cc.Animation').on('finished', this.onDice2Finished, this);
 	}
 	runDice()
 	{ 
-		this.ui.Dice1=ctrl.Dice1;
-		this.ui.Dice2=ctrl.Dice2;
 		this.node.active=true; 
-		this.ui.Dice1.getComponent('cc.Animation').play()
-		this.ui.Dice2.getComponent('cc.Animation').play()
+		this.ui.Dice1.getComponent('cc.Animation').play();
+		this.ui.Dice2.getComponent('cc.Animation').play();
+	}
+	onDice1Finished()
+	{
+		console.log("dice1Finish"+this.model.dice1Value);
+		var name = "ThrowDiceResult_0"+this.model.dice1Value;
+		var spriteFrame = this.ui.DiceList.getSpriteFrame(name);
+		if(spriteFrame){
+			this.ui.Dice1.getComponent(cc.Sprite).spriteFrame = spriteFrame;
+        }else{
+            cc.error('atlas lost frame= '+name+', user value= ',value);
+        }
+	}
+	onDice2Finished()
+	{
+		console.log("dice2Finish"+this.model.dice2Value);
+		var name = "ThrowDiceResult_0"+this.model.dice2Value;
+		var spriteFrame = this.ui.DiceList.getSpriteFrame(name);
+		if(spriteFrame){
+			this.ui.Dice2.getComponent(cc.Sprite).spriteFrame = spriteFrame;
+        }else{
+            cc.error('atlas lost frame= '+name+', user value= ',value);
+        }
 	}
 	hideDice()
 	{
@@ -86,6 +118,10 @@ export default class QzmjDiceCtrl extends BaseCtrl {
 	//这边去声明ui组件
     @property(cc.Node)
 	Dice1=null;
+
+    @property(cc.SpriteAtlas)
+    DiceList:cc.SpriteAtlas = null;
+
     @property(cc.Node)
 	Dice2=null;
 	//声明ui组件end
@@ -143,6 +179,7 @@ export default class QzmjDiceCtrl extends BaseCtrl {
 	}
 	process_dingzhuang(msg)
 	{
+		this.model.initDices(msg);
 		this.view.runDice();
 	} 
 	process_fapai(msg)

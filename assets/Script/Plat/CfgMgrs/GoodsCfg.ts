@@ -10,7 +10,7 @@ export default class GoodsCfg extends BaseCfg{
 
 	constructor(){
 		super();
-		this.goodsPath=this.getFullPath('goods.json');
+		this.goodsPath=this.getFullPath('goods');
 	}
 	
     private static _instance:GoodsCfg; 

@@ -3,11 +3,12 @@ import BetCfg from "./BetCfg";
  
 export default class GameIdCfg extends BaseCfg{
   
-    //单例处理
+	//单例处理
+	private gameids = null;
 	private gameIdPath=null;
 	constructor(){
 		super();
-		this.gameIdPath=this.getFullPath('gameid.json');
+		this.gameIdPath=this.getFullPath('gameid'); 
 	}
 	
     private static _instance:GameIdCfg; 
@@ -20,6 +21,11 @@ export default class GameIdCfg extends BaseCfg{
 	loadGameIdCb(name,data){ 
 		this.loaded=true; 
 		BetCfg.getInstance().loadCfgs(data);
+		this.gameids = data;
+	}
+	getGameIds()
+	{
+		return this.gameids;
 	}
 	loadGameId()
 	{

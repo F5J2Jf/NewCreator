@@ -46,11 +46,11 @@ export default class BaseCtrl extends cc.Component {
             G_FRAME.globalEmitter.on(event_id,cb,this);
         } 
     } 
-    onDestory()
+    onDestroy()
     {  
         //析构中移除网络监听,移除事件对象,数据模型,视图
         //停止定时器 
-        //移除所有监听
+        //移除所有监听 
         G_FRAME.netEmitter.remove_by_listener(this);
         G_FRAME.globalEmitter.remove_by_listener(this); 
         delete this.model; 

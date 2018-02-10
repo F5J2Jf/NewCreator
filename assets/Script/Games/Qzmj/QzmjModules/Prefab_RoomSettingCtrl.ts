@@ -14,7 +14,6 @@ class Model extends BaseModel{
 	constructor()
 	{
 		super();
-
 	}
 }
 //视图, 界面显示或动画，在这里完成

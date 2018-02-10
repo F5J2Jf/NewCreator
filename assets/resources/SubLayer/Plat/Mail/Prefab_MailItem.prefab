@@ -152,7 +152,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "3939e634-2d28-4410-9f57-68eab199ad50"
     },
     "fileId": "62mVa2SbdIVIH18xqAlRsG",
     "sync": false
@@ -192,7 +192,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 112,
+      "width": 600,
       "height": 28
     },
     "_rotationX": 0,
@@ -223,15 +223,15 @@
     "_actualFontSize": 28,
     "_fontSize": 28,
     "_lineHeight": 28,
-    "_enableWrapText": true,
+    "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
     "_N$string": "邮箱详情",
-    "_N$horizontalAlign": 1,
+    "_N$horizontalAlign": 0,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 0
+    "_N$overflow": 1
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -239,7 +239,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "3939e634-2d28-4410-9f57-68eab199ad50"
     },
     "fileId": "97SMPfiRFL7a0E+jDnnBKx",
     "sync": false
@@ -372,7 +372,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "已阅",
+    "_N$string": "查看",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -384,7 +384,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "3939e634-2d28-4410-9f57-68eab199ad50"
     },
     "fileId": "d5Smt85P1KkZ6Lxg0QTds+",
     "sync": false
@@ -421,7 +421,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "3939e634-2d28-4410-9f57-68eab199ad50"
     },
     "fileId": "0f5piCe4lKWr0AXjcG4NjS",
     "sync": false
@@ -458,7 +458,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "3939e634-2d28-4410-9f57-68eab199ad50"
     },
     "fileId": "00KbJGiJRCdKi6EdOBR+cq",
     "sync": false

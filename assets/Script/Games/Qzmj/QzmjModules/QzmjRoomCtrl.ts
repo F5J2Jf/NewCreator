@@ -14,7 +14,6 @@ import UserMgr from "../../../Plat/GameMgrs/UserMgr";
 import { QzmjDef } from "../QzMjMgr/QzmjDef";
 import FrameMgr from "../../../Plat/GameMgrs/FrameMgr";
 import QzmjResMgr from "../QzmjMgr/QzmjResMgr";
-
 var aniCfg={
 	op_hu:'hu',
 	op_angang:'angang',
@@ -81,6 +80,7 @@ class View extends BaseView{
 		lbl_shen:null,
 		btn_exit:null,
 		btn_help:null,
+		lbl_roomid:null,
 	};
 	//private node=null;
 	constructor(model){
@@ -130,7 +130,7 @@ class View extends BaseView{
 		this.ui.jin=ctrl.jin;
 		this.ui.lbl_shen=ctrl.lbl_shen;
 		this.ui.btn_exit=ctrl.btn_exit;
-		this.ui.btn_help=ctrl.btn_help; 
+		this.ui.btn_help=ctrl.btn_help;  
 		for(var seatid =0;seatid<4;++seatid)
 		{
 			var viewseatid=RoomMgr.getInstance().getViewSeatId(seatid);
@@ -138,9 +138,18 @@ class View extends BaseView{
 			flag.active=RoomMgr.getInstance().preparemap[seatid];
  
 		} 
-		this.ui.btn_prepare.active=!this.model.myPrepared  
-	} 
-    
+		switch(RoomMgr.getInstance().roomstate)
+		{
+			case G_ROOMSTATE.nomal:
+            case G_ROOMSTATE.oncemore: 
+                
+				this.ui.btn_prepare.active=false;
+			break;
+			default: 
+				this.ui.btn_prepare.active=!this.model.myPrepared  
+			break;
+		} 
+	}  
 	updateRoundInfo(){ 
 		this.ui.panel_round.active=true
 		var roominfo=RoomMgr.getInstance().roominfo;
@@ -149,7 +158,8 @@ class View extends BaseView{
 	}
 	updateRoomId(){
 		var roominfo=RoomMgr.getInstance().roominfo;
-		this.ui.lbl_roomid.active=true 
+		this.ui.lbl_roomid.node.active=true 
+		console.log("updateRoomId {roominfo=",roominfo)
 		this.ui.lbl_roomid.string= `房间号:${roominfo.password}`;
 	}
 	updateLeftCardCount(  )
@@ -176,7 +186,12 @@ class View extends BaseView{
 		this.ui.lbl_cardcount.node.active=false
 		this.ui.lbl_shen.node.active=false 
 	}  
- 
+	initDirectionBg()
+	{
+		var realUrl = cc.url.raw('resources/Games/Qzmj/MaJiang3d/Clock/game_direction_'+this.model.mySeatId + '.png');
+		var texture = cc.loader.getRes(realUrl);
+		this.node.getChildByName('Prefab_Clock3D').getChildByName('directionBg').getChildByName('game_direction').getComponent(cc.Sprite).spriteFrame.setTexture(texture);
+	}
 	//显示金
 	updateJin(){
 		// // body 
@@ -273,16 +288,48 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	btn_exit=null;
     @property(cc.Node)
 	btn_help=null;
+	@property(cc.Node)
+	btn_voiceChat=null; 
+	@property(cc.Node)
+	btn_chat=null;  
+  
+	
+
     @property({
 		tooltip : "麻将界面设置按钮",
 		type : cc.Node
 	})
 	btn_setting : cc.Node = null;
     @property({
-		tooltip : "麻将界面设置预制资源",
+		tooltip : "麻将界面换底牌按钮",
+		type : cc.Node
+	})
+	btn_changeCards : cc.Node = null;
+    @property({
+		tooltip : "麻将界面换底牌顺序按钮",
+		type : cc.Node
+	})
+	btn_CardsSort : cc.Node = null;
+	@property({
+		tooltip : "麻将改变牌墩顺序面板",
 		type : cc.Prefab
 	})
-	Prefab_Setting : cc.Prefab = null;
+	panel_ChangeSort : cc.Prefab = null;
+	@property({
+		tooltip : "麻将换牌面板",
+		type : cc.Prefab
+	})
+	panel_ChangeNode : cc.Prefab = null;
+    // @property({
+	// 	tooltip : "麻将界面设置预制资源",
+	// 	type : cc.Prefab
+	// })
+	// Prefab_Setting : cc.Prefab = null;
+    @property({
+		tooltip : "结算界面预制资源",
+		type : cc.Prefab
+	})
+	// Prefab_Settlement : cc.Prefab = null;
 
 
 	//这边下面是麻将重要组件 
@@ -328,6 +375,10 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	 
 	@property(cc.Prefab)
 	Prefab_Dice=null;
+
+	@property(cc.Prefab)
+	Prefab_ChatMsg=null;
+	
     //以下是占位图
 	@property(cc.Node)
 	rpp_dice=null;
@@ -361,16 +412,26 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	rpp_clock=null;
 	@property(cc.Node)
 	rpp_deposit=null;
+
+	//四个玩家语音聊天位置
+	@property(cc.Node)
+	rpp_chat0=null;
+	@property(cc.Node)
+	rpp_chat1=null;
+	@property(cc.Node)
+	rpp_chat2=null;
+	@property(cc.Node)
+	rpp_chat3=null;
    
 	//四个准备标志
 	@property(cc.Node)
-	img_prepared_0=null,
+	img_prepared_0=null;
 	@property(cc.Node)
-	img_prepared_1=null,
+	img_prepared_1=null;
 	@property(cc.Node)
-	img_prepared_2=null,
+	img_prepared_2=null;
 	@property(cc.Node)
-	img_prepared_3=null,
+	img_prepared_3=null;
 
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离 
@@ -380,6 +441,10 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 		//控制器
 		ctrl = this;
 		this.initMvc(Model,View); 
+
+		//在这里先生成对象，否则怕监听不到数据
+		QzmjLogic.getInstance();
+ 
 	}
 
 	//定义网络事件
@@ -389,7 +454,6 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 			//网络消息监听列表
 			'onLeaveRoom':this.onLeaveRoom, 
 			'onPrepare':this.onPrepare,     
-			'onEvent':this.onEvent,  
 			onSeatChange:this.onSeatChange,
 			'http.reqRoomUsers':this.http_reqRoomUsers, 
 			'http.reqExitRoom':this.http_reqExitRoom,
@@ -399,8 +463,12 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 			'http.reqSettle':this.http_reqSettle,
 			'http.reqDisbandRoom':this.http_reqDisbandRoom,
 			'onDisbandRoom':this.onDisbandRoom,
-			'http.reqRoomInfo':this.http_reqRoomInfo, 
-        } 		
+			'http.reqRoomInfo':this.http_reqRoomInfo,
+			
+		}
+		this.g_events = {
+			'http.sendText':this.http_sendText.bind(this),  
+		} 		
 	}
 	//定义全局事件
 	defineGlobalEvents()
@@ -409,40 +477,58 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	}
 	//绑定操作的回调
 	connectUi()
-	{
-		// this.connect(uitype.layout,this.ui.panel_round,this.panel_round,'查看房卡玩法') 
-		// this.connect(uitype.button,this.ui.btn_help,this.btn_help,'帮助')  
-		// this.connect(uitype.button,this.ui.btn_exit,this.btn_exit,'退出')  
-		// this.connect(uitype.button,this.ui.btn_setting,this.btn_setting,'设置')
-		// this.connect(uitype.button,this.ui.btn_chat,this.btn_chat,'聊天')
-		// this.connect(uitype.button,this.ui.btn_prepare,this.btn_prepare,'准备')
+	{ 
+		this.connect(G_UiType.image,this.ui.btn_exit,this.btn_exit_cb,'退出')   
         this.connect(G_UiType.image, this.btn_prepare, this.btn_prepare_cb, '点击准备')
 		this.connect(G_UiType.image, this.btn_setting, this.btn_setting_cb, '点击设置')
-	 
+		this.connect(G_UiType.image, this.btn_voiceChat, this.btn_voiceChat_cb, '点击语音聊天')
+		this.connect(G_UiType.image, this.btn_chat, this.btn_chat_cb, '点击文本聊天')
+		this.connect(G_UiType.image, this.btn_changeCards, this.btn_changeCards_cb, '点击换底牌按钮');
+		this.connect(G_UiType.image, this.btn_CardsSort, this.btn_CardsSort_cb, '点击改变牌敦顺序按钮');
+
+		//语音需要监听开始点击
+		this.btn_voiceChat.on(cc.Node.EventType.TOUCH_START, function (event) { 
+            if(event.target._isTouchEnabledEx) {
+                console.log("语音开始录制")
+            }
+        },this);
+		
 	}
 	start () { 
-		RoomMgr.getInstance().enterRoom();
+		if (RoomMgr.getInstance().roomstate==G_ROOMSTATE.nomal) {  
+			RoomMgr.getInstance().enterRoom()
+		}
+		else if (RoomMgr.getInstance().roomstate==G_ROOMSTATE.recover) {  
+			RoomMgr.getInstance().recoverRoom();
+		}
+		else  if (RoomMgr.getInstance().roomstate==G_ROOMSTATE.fangka) { 
+			RoomMgr.getInstance().enterRoom()
+		}
+		else  if (RoomMgr.getInstance().roomstate==G_ROOMSTATE.ownerrecover) { 
+			RoomMgr.getInstance().enterRoom()
+		}
+		
 	}
 	//网络事件回调begin 
  
 	http_reqRoomInfo() 
-	{
+	{ 
 		if(RoomMgr.getInstance().roomtype==1){ 
 			this.view.updateRoundInfo();
 			this.view.updateRoomId()
 		}
 	}  
-	
-	onEvent(msg)
-	{
-	 
+	http_sendText(msg){
+		let prefab_ChatMsg = cc.instantiate(this.Prefab_ChatMsg);
+		this.rpp_chat0.addChild(prefab_ChatMsg);
+		(msg.text != undefined)?prefab_ChatMsg.getComponent(prefab_ChatMsg.name).setMsg(msg.text):prefab_ChatMsg.getComponent(prefab_ChatMsg.name).setImg(msg.img)
 	}
 	onSyncData(  ){
 		// body 
 		this.model.recover();
 		this.view.recover();
-		this.ui.lbl_cardcount.active=true
-		this.ui.lbl_shen.active=true
+		this.ui.lbl_cardcount.node.active=true
+		this.ui.lbl_shen.node.active=true
 		this.view.updateLeftCardCount();  
 	}
 	onSeatChange(msg){
@@ -470,7 +556,7 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	}
 	http_reqRoomUsers(){
 		// body  
-		// if (RoomMgr.getInstance().roomstate==RoomMgr.state_oncemore) {  
+		// if (RoomMgr.getInstance().roomstate==G_ROO.state_oncemore) {  
 		// 	RoomMgr.getInstance().reqPrepare()
 		// }
 		this.model.updateMyInfo();//更新我的信息
@@ -510,19 +596,15 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 		if(msg.seatid==this.model.mySeatId){ 
 			this.updateMyPrepared();
 		}
+		this.view.initDirectionBg();
 
 	}
 	http_reqSettle(  ){
-		// body
-		this.view.clearMyCard(); 
+		// body 
 		if (null == QzmjLogic.getInstance().win_seatid ){
 			this.view.drawGame(); 
-			//this.start_sub_module(platmodule.liuju);//显示流局
 		}
-		else
-		{ 
-			//this.start_sub_module(platmodule.fqmjsettle);//显示结算
-		}
+ 		this.start_sub_module(G_MODULE.QzmjSettle);//显示结算 
 	}
 	onProcess(msg){
 		this.view.updateLeftCardCount();
@@ -562,9 +644,44 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 		var viewseatid=RoomMgr.getInstance().getViewSeatId(msg.seatid)
 		this.ui.prepareFlags[viewseatid].active=false
 	}
-	btn_chat_cb( ){
+	
+ 
+	op_chupai(msg){ 
+		//收到出牌的指令了
+		//不是自己 
+		if (this.model.mySeatId != QzmjLogic.getInstance().curseat ){ 
+			return;
+		}
+		this.model.disabledOp();
+		this.model.cursel=0; 
+		this.view.updateCards(false);
+	}
 
+	
+
+	//end
+	//全局事件回调begin
+	//end
+	//按钮或任何控件操作的回调begin
+	private btn_setting_cb () : void {
+		 this.start_sub_module(G_MODULE.RoomSetting);
+		// let node = cc.instantiate(this.Prefab_Setting);
+		// cc.find("Canvas").addChild(node);
+	}
+	private btn_chat_cb( ):void{
+		this.start_sub_module(G_MODULE.ChatNode);
 	} 
+	private btn_voiceChat_cb(event):void{
+		console.log("语音录制结束")
+	}
+	private btn_changeCards_cb(event):void{
+		let node = cc.instantiate(this.panel_ChangeNode);
+		this.node.addChild(node);
+	}
+	private btn_CardsSort_cb(event):void{
+		let node = cc.instantiate(this.panel_ChangeSort);
+		this.node.addChild(node);
+	}
 	
 	btn_prepare_cb( ){ 
 		RoomMgr.getInstance().reqPrepare()
@@ -582,20 +699,6 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 	panel_round_cb(){
 		console.log("查看房间玩法")
 	}
-	 
- 
-	op_chupai(msg){ 
-		//收到出牌的指令了
-		//不是自己 
-		if (this.model.mySeatId != QzmjLogic.getInstance().curseat ){ 
-			return;
-		}
-		this.model.disabledOp();
-		this.model.cursel=0; 
-		this.view.updateCards(false);
-		
-	}
-
 	btn_exit_cb( ){
 		if (RoomMgr.getInstance().bGameIsStated) {
 			var okcb=function(  )
@@ -604,7 +707,7 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 				RoomMgr.getInstance().reqExitRoom()
 			}
  
-			FrameMgr.getInstance().showMsgBox('游戏已经开始了,此时退出游戏,你的牌局将交由机器管家代打,输了怪我咯!',okcb.bind(this)); 
+			FrameMgr.getInstance().showDialog('游戏已经开始了,此时退出游戏,你的牌局将交由机器管家代打,输了怪我咯!',okcb.bind(this)); 
 			return;
 		}
 		else{ 
@@ -615,21 +718,12 @@ export default class QzmjRoomCtrl extends BaseCtrl {
 					// body
 					RoomMgr.getInstance().reqDisbandRoom() 
 				}
-				FrameMgr.getInstance().showMsgBox('开局前退出将解散房间,不消耗房卡!',okcb.bind(this));  
+				FrameMgr.getInstance().showDialog('开局前退出将解散房间,不消耗房卡!',okcb.bind(this));  
 				return;
 			}
 		}
 		RoomMgr.getInstance().reqExitRoom()
 	} 
-
-	//end
-	//全局事件回调begin
-	//end
-	//按钮或任何控件操作的回调begin
-	private btn_setting_cb () : void {
-		// this.start_sub_module(G_MODULE.RoomSetting);
-		let node = cc.instantiate(this.Prefab_Setting);
-		cc.find("Canvas").addChild(node);
-	}
+	 
 	//end
 }

@@ -29,8 +29,7 @@ export default class QzmjLogic extends BaseMgr
     touzi2=null; 
     curcard=null; 
     op_tick=null; 
-    curplayer=null; 
-    cur_eventtype=null;
+    curplayer=null;  
 
     win_seatid=null;//流局 
     fanshus={};
@@ -49,6 +48,7 @@ export default class QzmjLogic extends BaseMgr
     scores=null
     mysocre=null
     servertime=null
+    myself=null;
     //单例处理
     private static _instance:QzmjLogic;
     public static getInstance ():QzmjLogic{
@@ -78,8 +78,18 @@ export default class QzmjLogic extends BaseMgr
             onSyncData:this.onSyncData,
             'onGameFinished':this.onGameFinished,
             'http.reqSettle':this.http_reqSettle,
+            'http.reqRoomUsers':this.http_reqRoomUsers,   
+            onGmOp:this.onGmOp,
         }
         this.resetData();
+    }
+    http_reqRoomUsers(msg)
+    { 
+        //同步数据
+        if(RoomMgr.getInstance().roomstate==G_ROOMSTATE.recover)
+		{
+			this.syncData();
+		}
     }
     reqSettle()
     {
@@ -123,8 +133,7 @@ export default class QzmjLogic extends BaseMgr
         this.touzi2=msg.touzi2;
         this.curcard=msg.curcard; 
         this.op_tick=msg.op_tick;
-        this.curplayer=this.players[this.curseat] 
-        this.cur_eventtype=msg.cur_eventtype;
+        this.curplayer=this.players[this.curseat]  
         this.cardcount=msg.cardcount;
         this.cardwallindex=msg.cardwallindex;
         if(msg.huinfo)
@@ -132,6 +141,7 @@ export default class QzmjLogic extends BaseMgr
             this.updateHuInfo(msg.huinfo)
         }  
         var myseatid=RoomMgr.getInstance().getMySeatId();
+        this.myself=this.players[myseatid]; 
         for (var seatid=0;seatid<4;++seatid)
         {
             if (seatid == myseatid){ 
@@ -155,9 +165,9 @@ export default class QzmjLogic extends BaseMgr
         }   
         //资源重新加载
         QzmjResMgr.getInstance().clear();  
-        var myseatid=RoomMgr.getInstance().getMySeatId();
-        var myself=this.players[myseatid]
-        myself.replaceJin();
+        var myseatid=RoomMgr.getInstance().getMySeatId(); 
+        this.myself.setEvents(msg.events);
+        this.myself.replaceJin();
         QzmjResMgr.getInstance().setJin(this.jin)
     }
     tuoGuan( bvalue)
@@ -189,9 +199,7 @@ export default class QzmjLogic extends BaseMgr
         this.needtongbu=false;//需要同步数据 
         this.curplayer=null;//当前出手玩家
         this.zhuangseat=0;//庄家位置
-
-        this.cur_eventtype=0;//事件类型 
-        this.checklevel=0;//检测的等级
+   
         this.eventseat=0;//检测的座位
         this.cur_opseatid=null;//当前操作的人
         for(var i = 0;i<this.seatcount;++i)
@@ -204,9 +212,11 @@ export default class QzmjLogic extends BaseMgr
     onOp(msg)
     {
         // body
+        this.myself.clearEvent();
         var event=msg.event; 
         var op=QzmjDef.op_cfg[event]
         this.cur_opseatid=msg.opseatid;
+        console.log("onOp msg=",msg)
         console.log("onOp event=",msg.event,op,'curopseat=',this.cur_opseatid)
         if (op==QzmjDef.op_chupai) 
         {
@@ -300,15 +310,14 @@ export default class QzmjLogic extends BaseMgr
     //麻将事件
     onEvent(msg)
     {
-        console.log("onEvent msg.event=",msg.event)
-        // body
-        this.cur_eventtype=msg.event; 
-        var cur_op=QzmjDef.op_cfg[this.cur_eventtype]
-        if (cur_op==QzmjDef.op_hu || 
-            cur_op==QzmjDef.op_zimo)
-        { 
-            this.updateHuInfo(msg.huinfo) 
-        }  
+        this.myself.setEvents(msg.events);
+        // body 
+        // var cur_op=QzmjDef.op_cfg[this.cur_eventtype]
+        // if (cur_op==QzmjDef.op_hu || 
+        //     cur_op==QzmjDef.op_zimo)
+        // { 
+        //     this.updateHuInfo(msg.huinfo) 
+        // }  
     }
     //胡牌信息i
     //这一块计算比较复杂，需要考虑其逻辑意义
@@ -321,8 +330,7 @@ export default class QzmjLogic extends BaseMgr
         this.huinfo.hucards=hucards;
         this.huinfo.hutime=huinfo.hutime;
         this.huinfo.hutype=huinfo.hutype;
-        this.huinfo.cardpairs=cardpairs;
-    
+        this.huinfo.cardpairs=cardpairs; 
         for (var i = 0;i<hucards.length;++i)
         { 
             var item=hucards[i];
@@ -333,7 +341,7 @@ export default class QzmjLogic extends BaseMgr
             cardpairs.push(cardarr);
             if(type==0){
                 if(jincount==2){ 
-                    for (var k = 0;k<1;++k){ 
+                    for (var k = 0;k<2;++k){ 
                         cardarr.push(this.jin)
                     }
                 }
@@ -343,7 +351,7 @@ export default class QzmjLogic extends BaseMgr
                 }
                 else
                 {
-                    for (var k = 0;k<1;++k)
+                    for (var k = 0;k<2;++k)
                     { 
                         cardarr.push(cards[0])
                     } 
@@ -354,7 +362,7 @@ export default class QzmjLogic extends BaseMgr
                     for (var k = 0;i<2;++k){ 
                         cardarr.push(this.jin)
                     }
-                    cardarr.push(cards[1])
+                    cardarr.push(cards[0])
                 }
                 else if(jincount==1){ 
                     cardarr.push(this.jin)
@@ -371,7 +379,7 @@ export default class QzmjLogic extends BaseMgr
             else if(type==2){ 
 
                 if(jincount==2){ 
-                    for (var k = 0;k<3;k++)
+                    for (var k = 0;k<2;k++)
                     {
                         cardarr.push(this.jin)
                     }  
@@ -379,12 +387,10 @@ export default class QzmjLogic extends BaseMgr
                 }
                 else if(jincount==1){ 
                     if(Math.abs(cards[1]-cards[0])==1){ 
-                        cardarr.push(this.jin)
-                        {
-                            for (var k = 0;k<3;++k){ 
-                                cardarr.push(cards[k])
-                            }
-                        }
+                        cardarr.push(this.jin) 
+                        for (var k = 0;k<2;++k){ 
+                            cardarr.push(cards[k])
+                        } 
                     }
                     else 
                     {
@@ -396,11 +402,12 @@ export default class QzmjLogic extends BaseMgr
                 else
                 {
                     for(var k = 0;k<3;++k){ 
-                        cardarr.push(cards[1]+k)
+                        cardarr.push(cards[0]+k)
                     }
                 }
             }
         }
+ 
     }
     //麻将进度
     onProcess(msg)
@@ -426,8 +433,11 @@ export default class QzmjLogic extends BaseMgr
     http_reqSettle(msg)
     { 
         var settle=JSON.parse(msg.settle);
+        this.curcard = settle.curcard;
+        this.opcardarr = settle.opcardarr;
         this.cardwallindex=settle.cardwallindex;
         this.win_seatid=settle.win_seatid;
+        this.handcards = settle.handcards;
         // body  
         this.lianzhuang=settle.lianzhuang;
         this.roomvalue=settle.roomvalue;
@@ -462,7 +472,8 @@ export default class QzmjLogic extends BaseMgr
 
     //定庄
     process_dingzhuang(msg){
-        // body 
+        // body  
+        this.myself=this.players[RoomMgr.getInstance().myseatid]; 
         QzmjResMgr.getInstance().clear();
         this.resetData();
         this.matchid=msg.matchid;
@@ -525,27 +536,19 @@ export default class QzmjLogic extends BaseMgr
         this.cardwallindex=msg.cardwallindex;
         var huaarr=msg.huaarr;
         var jin=msg.jin;
-        this.jin=msg.jin;
-        var myseatid=RoomMgr.getInstance().myseatid;
-        var myself=this.players[myseatid]
-        myself.replaceJin();
+        this.jin=msg.jin;  
+        this.myself.replaceJin();
         QzmjResMgr.getInstance().setJin(this.jin)
         for (var i=0;i<huaarr.length;++i){  
             this.curplayer.putInHua(huaarr[i])
         }
     }
-    playerCancel(  ){
-        var msg={
-            'ok':false,
-        }
-        this.notify_msg('room.roomHandler.playerOp',msg);
-    }
-    playerOp(data=null){
-        // body
-        var msg={
-            'ok':true,
-        }
-        var op=QzmjDef.op_cfg[this.cur_eventtype]  
+    //玩家操作
+    playerOp(event,data){
+        // body 
+        console.log("playerOp event=",event,data)
+        var msg={event:event}
+        var op=QzmjDef.op_cfg[event]  
         if(op==QzmjDef.op_chupai){  
             msg['data']=this.curplayer.getCard(data);
         }
@@ -557,22 +560,16 @@ export default class QzmjLogic extends BaseMgr
         } 
     
         this.notify_msg('room.roomHandler.playerOp',msg);
+        this.myself.clearEvent();
+    }
+    //玩家取消
+    playerCancel()
+    { 
+        this.notify_msg('room.roomHandler.playerCancel',{});
     }
     
-    
-    updateData(route,msg){
-        var routerfun=this.routes[route];
-        if (routerfun){ 
-            //先同步状态
-            //拿牌
-            // if not this.checkCardState(msg) then 
-            // 	this.needtongbu=false;//然后去同步数据
-            // 	return;
-            // end  
-            routerfun(self,msg)
-        } 
-    }
-
+ 
+    //检查是否掉数据
     checkCardState(msg){
         //先同步状态
         var cardchanged=msg.cardchanged;
@@ -594,9 +591,48 @@ export default class QzmjLogic extends BaseMgr
         this.cardstate=cardstate;
         return true
     }
-}
+    //gm操作
+    gmOp(msg)
+    { 
+        this.notify_msg('room.roomHandler.gmOp',msg);
+    }
+    //gm请求
+    gmReq(msg)
+    { 
+        this.send_msg('room.roomHandler.gmReq',msg);
+    }
  
-
+    //收到gmop广播
+    onGmOp(msg)
+    {
+        if(!msg)
+        {
+            return;
+        }
+        let optype=msg.optype;
+        let opseatid=msg.opseatid;
+        let data=msg.data;
+        let src=data.src;
+        let dest=data.dest;
+        let target=data.target
+        console.log("logic onGmOp msg=",msg)
+        switch(optype)
+        {
+            //换牌操作
+            case QzmjDef.gmop_changecard:
+                if(opseatid==RoomMgr.getInstance().getMySeatId())
+                {
+                    //如果是我自己则修改自己的牌
+                    this.players[opseatid].switchCard(src,dest);
+                }
+                if(target==RoomMgr.getInstance().getMySeatId()){
+                    //如果是我的牌被人换了
+                    this.players[target].switchCard(dest,src);
+                }
+            break;
+        }
+    }
+}
  
  
 

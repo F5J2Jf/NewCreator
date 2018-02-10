@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "8930d963-8053-4833-8f52-f4c29b126b86",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "pic_jiesuanshengli": {
+      "ver": "1.0.3",
+      "uuid": "2f717222-b739-4c38-b83a-a65aa4d4c1fa",
+      "rawTextureUuid": "8930d963-8053-4833-8f52-f4c29b126b86",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 1,
+      "trimX": 3,
+      "trimY": 0,
+      "width": 281,
+      "height": 313,
+      "rawWidth": 287,
+      "rawHeight": 315,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

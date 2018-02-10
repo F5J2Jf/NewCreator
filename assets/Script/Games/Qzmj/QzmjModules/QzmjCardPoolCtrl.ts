@@ -144,7 +144,7 @@ export default class QzmjCardPoolCtrl extends BaseCtrl {
 		// body
 		this.model.recover();
 		this.view.recover() 
-		this.view.updateLogicId()
+		this.model.updateLogicId()
 	}
 	http_reqRoomUsers(msg){
 		this.model.clear();

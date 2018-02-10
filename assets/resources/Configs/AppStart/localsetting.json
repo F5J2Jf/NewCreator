@@ -1,0 +1,5 @@
+{
+    "cfgurl": "http://192.168.1.241:2018/majhong", 
+    "logenable": true, 
+    "producttag": "dev_android"
+}

@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "54fb5d28-faf0-4ae2-934a-6fb55d54ba48",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "altas_bullCards": {
+      "ver": "1.0.3",
+      "uuid": "19164286-e9d3-4562-b0cb-614c5b77fe78",
+      "rawTextureUuid": "54fb5d28-faf0-4ae2-934a-6fb55d54ba48",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 1936,
+      "height": 675,
+      "rawWidth": 1936,
+      "rawHeight": 675,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

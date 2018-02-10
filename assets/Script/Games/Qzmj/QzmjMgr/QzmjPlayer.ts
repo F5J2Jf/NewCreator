@@ -1,15 +1,6 @@
 import { QzmjDef } from "./QzmjDef";
 import RoomMgr from "../../../Plat/GameMgrs/RoomMgr";
-Array.prototype.remove=function(index){
- 
-    for(var j = index;j <this.length-1;j++){ 
-        this[j]=this[j+1]; 
-    } 
-    this.length = this.length-1;
-}
-Array.prototype.insert = function (index, item) {  
-	this.splice(index, 0, item);  
-};    
+
  
 export default class QzmjPlayer
 {
@@ -22,11 +13,43 @@ export default class QzmjPlayer
 	uid=null;
 	seatid=null;
 	logic=null;
+	events=[];//事件列表
+	state=QzmjDef.state_idle;//玩家初始状态
 	constructor()  
 	{ 
 		this.uid=null;//uid  
 		this.seatid=null 
 	} 
+	clearEvent()
+	{
+		this.events=[];
+		this.state=QzmjDef.state_idle;//玩家初始状态
+	}
+	pushEvent(event)
+	{
+		//推入事件
+		this.events.push(event);
+		this.state=QzmjDef.state_idle;
+		switch(event)
+		{
+			//如果是出牌事件，则将状态切至出牌
+			case QzmjDef.event_chupai:
+				this.state=QzmjDef.state_chupai;
+			break;
+			//如果是其他事件则将状态切入事件
+			default:
+				this.state=QzmjDef.state_event;
+			break;
+		} 
+	}
+	setEvents(events)
+	{
+		this.events=[];
+		for(var i = 0;i<events.length;++i)
+		{
+			this.pushEvent(events[i]);
+		}
+	}
 	getHuaCount()
 	{
 		var huacount=0;
@@ -57,6 +80,8 @@ export default class QzmjPlayer
 		this.cardpool=[];
 		this.huapais={};
 		this.opcards=[];//操作的牌，如杠碰吃
+		this.events=[];//事件列表
+		this.state=QzmjDef.state_idle;//玩家初始状态
 	} 
 	replaceJin()
 	{
@@ -303,11 +328,21 @@ export default class QzmjPlayer
 				console.log("QzmjPlayer:getCardsCanAnGang",cardvalue)
 				cardsCanAnGang.push(cardvalue)
 			} 
-		} 
-		console.log("cardnummap=")
-		console.log(cardcountmap)
-		console.log(cardsCanAnGang)
+		}  
 		return cardsCanAnGang;
 	}
- 
+	switchCard(src,dest)
+	{
+		console.log("换牌前=",this.handcard)
+		for (var i = 0; i < this.handcard.length; i++) {
+			let cardValue=this.handcard[i];
+			if(cardValue==src)
+			{
+				this.handcard[i]=dest;
+				console.log("换牌后=",this.handcard)
+				this.sortCard();
+				return;
+			}
+		}
+	}
 } 

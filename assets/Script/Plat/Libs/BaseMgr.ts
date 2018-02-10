@@ -13,8 +13,8 @@ export default class BaseMgr{
         }
     } 
     //发送全局事件
-    gemit(event,arg1,arg2) {
-        G_FRAME.globalEmitter.emit(arg1,arg2);
+    gemit(event,arg) {
+        G_FRAME.globalEmitter.emit(event,arg);
     }   
     send_msg(route:string,msg?:any){
         GameNet.getInstance().send_msg(route,msg);

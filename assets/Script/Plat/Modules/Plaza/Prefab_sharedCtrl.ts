@@ -5,6 +5,7 @@ author: YOYO
 import BaseCtrl from "../../Libs/BaseCtrl";
 import BaseView from "../../Libs/BaseView";
 import BaseModel from "../../Libs/BaseModel";
+import WxSdkMgr from "../../SdkMgrs/WxSdk";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
@@ -73,7 +74,7 @@ export default class Prefab_sharedCtrl extends BaseCtrl {
 	connectUi()
 	{
         this.connect(G_UiType.image, this.node_close, this.node_close_cb, '点击关闭')
-        this.connect(G_UiType.image, this.node_weixin, this.node_weixin_cb, '点击关闭')
+        this.connect(G_UiType.image, this.node_weixin, this.node_weixin_cb, '微信分享')
         this.connect(G_UiType.image, this.node_phone, this.node_phone_cb, '点击关闭')
 	}
 	start () {
@@ -89,7 +90,8 @@ export default class Prefab_sharedCtrl extends BaseCtrl {
         this.finish();
     }
     private node_weixin_cb(event){
-        console.log('node_weixin_cb')
+		console.log('node_weixin_cb');
+		WxSdkMgr.getInstance().WxShare(1, "分享标题", "分享内容", "http://www.baidu.com", true);
     }
     private node_phone_cb(event){
         console.log('node_phone_cb')

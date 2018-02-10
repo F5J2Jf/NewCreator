@@ -25,6 +25,7 @@ class Model extends BaseModel{
 	curtime=null;
 	curseat=null;
 	dirid=null; 
+	mySeatId = null;
 	constructor()
 	{
 		super();
@@ -48,7 +49,10 @@ class Model extends BaseModel{
 		this.updateSeatId();
 	} 
 	updateSeatId(){
-		this.curseat=QzmjLogic.getInstance().curseat; 
+		//directionbgIdx
+		this.mySeatId = RoomMgr.getInstance().getMySeatId();
+		this.curseat=QzmjLogic.getInstance().curseat;
+		//directionIdx
 		this.dirid =  RoomMgr.getInstance().getViewSeatId(this.curseat);
 		if (this.dirid < 0 ){ 
 			this.dirid=this.dirid+4;
@@ -107,7 +111,11 @@ class View extends BaseView{
 		{
 			var sp=this.tiparr[i];
 			sp.active=false;
-		}  
+		}
+		var realUrl = cc.url.raw('resources/Games/Qzmj/MaJiang3d/Clock/game_direction_'+this.model.mySeatId +'_'+this.model.dirid +'.png');
+		var texture = cc.loader.getRes(realUrl);
+		var spriteFrame = new cc.SpriteFrame(texture); 
+		this.tiparr[this.model.dirid].getComponent(cc.Sprite).spriteFrame = spriteFrame;
 		this.tiparr[this.model.dirid].active=true;
 	 
 	}
@@ -160,6 +168,10 @@ export default class QzmjRoundCtrl extends BaseCtrl {
 			'http.reqRoomUsers':this.http_reqRoomUsers, 
 			'onGameFinished':this.onGameFinished,
 		}
+	}
+	onDestroy(){
+		this.stopTick();
+		super.onDestroy();
 	}
 	//定义全局事件
 	defineGlobalEvents()
@@ -227,8 +239,8 @@ export default class QzmjRoundCtrl extends BaseCtrl {
 		this.view.dirChange();
 		this.model.state=1; 
 		this.view.updateDir()
-		var event=QzmjLogic.getInstance().cur_eventtype;
-		if (event!=0 && event != null){  
+		// var event=QzmjLogic.getInstance().cur_eventtype;
+		if (msg.events.length>0){  
 			this.stopTick();
 			//重置这些时间
 			this.model.curtime=QzmjLogic.getInstance().maxoptime - msg.op_tick;
@@ -271,6 +283,7 @@ export default class QzmjRoundCtrl extends BaseCtrl {
 	} 
 	process_ready(  ){
 		// body
+		this.model.mySeatId = RoomMgr.getInstance().getMySeatId();
 		this.stopTick();
 		this.view.clear();
 	}

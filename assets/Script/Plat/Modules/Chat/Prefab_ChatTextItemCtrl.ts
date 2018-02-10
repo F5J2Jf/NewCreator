@@ -16,7 +16,6 @@ class Model extends BaseModel{
 	constructor()
 	{
 		super();
-
 	}
 }
 //视图, 界面显示或动画，在这里完成
@@ -24,7 +23,7 @@ class View extends BaseView{
 	ui={
 		//在这里声明ui
 	};
-	private node=null;
+	//private node=null;
 	constructor(model){
 		super(model);
 		this.node=ctrl.node;

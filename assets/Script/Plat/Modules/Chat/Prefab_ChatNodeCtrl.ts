@@ -7,8 +7,7 @@ import BaseView from "../../Libs/BaseView";
 import BaseModel from "../../Libs/BaseModel";
 import UiMgr from "../../GameMgrs/UiMgr";
 import ModuleMgr from "../../GameMgrs/ModuleMgr";
-
-
+import CharMgr from "../../GameMgrs/CharMgr";
 //MVC模块,
 const {ccclass, property} = cc._decorator;
 let ctrl : Prefab_ChatNodeCtrl;
@@ -16,6 +15,7 @@ let ctrl : Prefab_ChatNodeCtrl;
 class Model extends BaseModel{
 	public ExpressionLen : number;
 	public ChatText : Array<string>;
+	
 	constructor()
 	{
 		super();
@@ -32,6 +32,7 @@ class Model extends BaseModel{
 }
 //视图, 界面显示或动画，在这里完成
 class View extends BaseView{
+	public allHeight: number;
 	ui={
 		//在这里声明ui
 		scroll_Expression : null,
@@ -39,13 +40,14 @@ class View extends BaseView{
 		atlas_Expression : null,
 		prefab_ChatText : null,
 	};
-	private node=null;
-	private model:Model =null
+	//private node=null;
+	//private model:Model =null
 	constructor(model){
 		super(model);
 		this.node=ctrl.node;
 		this.model=model;
 		this.initUi();
+		this.addGrayLayer();
 	}
 	//初始化ui
 	initUi()
@@ -56,50 +58,32 @@ class View extends BaseView{
 		this.ui.scroll_Text = ctrl.TextScroll;
 		//默认是表情列表，所以文本节点不激活，避免吞噬触摸事件
 		this.ui.scroll_Text.node.active = false;
-		this.addExpress();
-		this.addText();
+		//高度为0
+		this.allHeight = 0;
 	}
 
-	addExpress () : void {
-		let index = 5,
-		allHeight = 0,
-		spacingY = this.ui.scroll_Expression.content.getComponent(cc.Layout).spacingY,
+	addExpress (index:Number,i:Number,expression) : void {
+		
+		let spacingY = this.ui.scroll_Expression.content.getComponent(cc.Layout).spacingY,
         nodeHeight = 0;
-		let len : any = this.model.ExpressionLen;
-		let width = this.ui.scroll_Expression.content.width;
 		this.ui.scroll_Expression.content.height = 0;
-		for (let i = 1; i < len + 1; i ++) {
-			let node = new cc.Node();
-			node.name = i + "";
-			let expression = node.addComponent(cc.Sprite);
-			expression.spriteFrame = this.ui.atlas_Expression.getSpriteFrame(i);
-			this.ui.scroll_Expression.content.addChild(node);
-			index --;
-            if (index == 0) {
-				allHeight += node.height + spacingY;
-                index = 5;
-            }
-            nodeHeight = node.height;
+		let node = expression.node;
+		expression.spriteFrame = this.ui.atlas_Expression.getSpriteFrame(i);
+		this.ui.scroll_Expression.content.addChild(node);
+		if (index == 0) {
+			this.allHeight += node.height + spacingY;
 		}
-		this.ui.scroll_Expression.content.height = allHeight + nodeHeight;
+		nodeHeight = node.height;
+		this.ui.scroll_Expression.content.height = this.allHeight + nodeHeight;
+		console.log(this.ui.scroll_Expression.content.height)
 	}
 	
-	addText () : void {
-		let list = this.model.ChatText;
+	addText (i:Number,text:string,TextItem:cc.Node) : void {
         let node = this.ui.scroll_Text.content;
         this.ui.scroll_Text.content.height = 0;
-        for (let i in list) {
-            let text = list[i];
-            let item = cc.instantiate(this.ui.prefab_ChatText);
-            node.addChild(item);
-            item.getChildByName("content").getComponent(cc.Label).string = text;
-        //     setTimeout(()=>{
-        //         item.height = item.getChildByName("content").height;
-        //         this.TextScroll.content.height += item.height + this.TextScroll.content.getComponent(cc.Layout).spacingY;
-        //     }, 500);
-			// click.registerButton(item, this._sendMsg, this, {text : text});
-			this.ui.scroll_Text.content.height += item.height + this.ui.scroll_Text.content.getComponent(cc.Layout).spacingY;
-        }
+		node.addChild(TextItem);
+		TextItem.getChildByName("content").getComponent(cc.Label).string = text;
+		this.ui.scroll_Text.content.height += TextItem.height + this.ui.scroll_Text.content.getComponent(cc.Layout).spacingY;
 	}
 
 	showExpression () : void {
@@ -157,6 +141,9 @@ export default class Prefab_ChatNodeCtrl extends BaseControl {
 		type : cc.Prefab
 	})
 	Prefab_ChatText : cc.Prefab = null;
+
+	@property(cc.Node)
+    bg : cc.Node = null;
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
 
@@ -181,24 +168,63 @@ export default class Prefab_ChatNodeCtrl extends BaseControl {
 	//绑定操作的回调
 	connectUi()
 	{ 
-		this.connect(G_UiType.image, this.ExpressionBtn, this._onClick_ExpressionBtn, "表情类型")
-		this.connect(G_UiType.image, this.TextBtn, this._onClick_TextBtn, '文本类型')
+		this.connect(G_UiType.image, this.ExpressionBtn, this.ExpressionBtn_cb, "表情类型")
+		this.connect(G_UiType.image, this.TextBtn, this.TextBtn_cb, '文本类型')
+		this.connect(G_UiType.image, this.bg, this.bg_bc, '点击背景关闭界面')
 	}
 	start () {
-		// this.view.addExpress();
-		// this.view.addText();
+		this.addExpress();
+		this.addText();
 	}
 	//网络事件回调begin
 	//end
 	//全局事件回调begin
 	//end
 	//按钮或任何控件操作的回调begin
-	private _onClick_ExpressionBtn () : void {
+	private ExpressionBtn_cb () : void {
 		this.view.showExpression();
 	}
-	private _onClick_TextBtn () : void {
+	private TextBtn_cb () : void {
 		this.view.showText();
 	}
-	
+	private prefab_ChatText_cb (node,event) : void {
+		let text = node.getChildByName("content").getComponent(cc.Label).string
+		var msg={
+            'text':text,
+        }
+        CharMgr.getInstance().sendText(msg);
+	}
+	private expression_cb (node,event) : void {
+		var msg={
+            'img':node.getComponent("cc.Sprite"),
+        }
+        CharMgr.getInstance().sendText(msg);
+	}
+	private bg_bc (node,event) : void {
+		this.finish();
+	}
 	//end
+	addExpress () : void {
+		let index = 5;
+		let len : any = this.model.ExpressionLen;
+		for (let i = 1; i < len + 1; i ++) {
+			let node = new cc.Node();
+			node.name = i + "";
+			let expression = node.addComponent(cc.Sprite);
+			this.connect(G_UiType.image, node, this.expression_cb, '点击聊天表情')
+			index --;
+			this.view.addExpress(index,i,expression);
+			if (index == 0) index = 5;
+		}
+	}
+	
+	addText () : void {
+		let list = this.model.ChatText;
+        for (let i = 0; i<list.length; ++i ) {
+			let text = list[i];
+			let prefab_ChatText = cc.instantiate(this.Prefab_ChatText);
+			this.connect(G_UiType.image, prefab_ChatText, this.prefab_ChatText_cb, '点击聊天文本')
+			this.view.addText(i,text,prefab_ChatText);
+        }
+	}
 }

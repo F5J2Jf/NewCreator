@@ -70,4 +70,19 @@ export default class FrameMgr{
             this._loadLayer=null;
         }
     }
+    /**
+     * 
+     * @param pos 位置
+     * @param color 颜色
+     * @param font 字体
+     * @param fontSize 字号
+     * @param context 文本
+     * @param delayTime 间隔时间
+     * @param cb 回调
+     */
+    public showTips(pos:{}, color:{}, font:string, fontSize:number, context:string, delayTime:number, cb?:Function){
+        ModuleMgr.getInstance().start_sub_module(G_MODULE.tipFrame, (prefabComp:Prefab_tipsCtrl)=>{
+            prefabComp.showTips(pos, color, font, fontSize, context, delayTime, cb);
+        })
+    }
 }

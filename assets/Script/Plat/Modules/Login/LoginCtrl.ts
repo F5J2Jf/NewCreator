@@ -5,6 +5,7 @@ import BaseModel from "../../Libs/BaseModel";
 import UiMgr from "../../GameMgrs/UiMgr";
 import LoginMgr from "../../GameMgrs/LoginMgr";
 import ModuleMgr from "../../GameMgrs/ModuleMgr";
+import WxSdkMgr from "../../SdkMgrs/WxSdk";
 //MVC编码示范,
 const {ccclass, property} = cc._decorator;
 let ctrl : LoginCtrl;
@@ -33,8 +34,10 @@ class View extends BaseView{
     {
         this.ui.btn_phone_login=ctrl.btn_phone_login;
         this.ui.btn_visitor_login=ctrl.btn_visitor_login;
+        
         //测试按钮
         this.showTestBtns();
+        //this.addToggl1e();
     }
     showTestBtns()
     {
@@ -53,6 +56,7 @@ class View extends BaseView{
             this.ui.testBtns.push(curNode)
         }
     } 
+
 }
 //c, 控制
 @ccclass
@@ -62,6 +66,7 @@ export default class LoginCtrl extends BaseCtrl {
     btn_visitor_login = null;
     @property(cc.Node)
     btn_phone_login = null; 
+
     //声明ui组件end
     //这是ui组件的map,将ui和控制器或试图普通变量分离  
     
@@ -138,7 +143,12 @@ export default class LoginCtrl extends BaseCtrl {
     } 
     btn_phone_login_cb(node,event)
     { 
-        this.start_sub_module(G_MODULE.UserLogin); 
+        // this.start_sub_module(G_MODULE.UserLogin); 
+        WxSdkMgr.getInstance().InitWXSdk(this._wechatLogin.bind(this));
+    }
+    //微信登录成功回调
+    _wechatLogin (data) : void {
+        
     }
     //end
 }

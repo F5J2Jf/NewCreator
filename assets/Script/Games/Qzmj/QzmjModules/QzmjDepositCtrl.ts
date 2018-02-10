@@ -41,7 +41,7 @@ class View extends BaseView{
 		this.node.active=false; 
 		this.ui.btn_quxiaotuoguan=ctrl.btn_quxiaotuoguan;
 	}
-	show(bShow){
+	show(bShow=true){
 		this.node.active=bShow;
 	}
 }
@@ -88,7 +88,7 @@ export default class QzmjDepositCtrl extends BaseCtrl {
 
 	onGameFinished(){
 		// body
-		this.view.hide();
+		this.view.show(false);
 	}
 	onProcess(msg){
 		// body 

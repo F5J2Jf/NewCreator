@@ -20,11 +20,13 @@ let ctrl : QzmjMyCardsCtrl;
 //模型，数据处理
 class Model extends BaseModel{
 	mySeatId=null; 
-	player=null;
+	myself=null;
 	curOp=null;
 	enable_op=null;
 	cursel=null;
 	jin=null;
+	myNodeX=null;
+	node_pox_gap=null;
 	constructor()
 	{
 		super();
@@ -33,7 +35,7 @@ class Model extends BaseModel{
 	updateMyInfo(  ){
 		// body 
 		this.mySeatId=RoomMgr.getInstance().getMySeatId(); 
-		this.player=QzmjLogic.getInstance().players[this.mySeatId] 
+		this.myself=QzmjLogic.getInstance().players[this.mySeatId] 
 	}
  
 	clear(  ){
@@ -41,6 +43,9 @@ class Model extends BaseModel{
 		this.curOp=null;
 		this.cursel=null; 
 		this.enable_op=false;
+		this.myNodeX = 0;
+		//自适应的偏移值（用于吃碰杠）
+		this.node_pox_gap = 140;
 	} 
 	setCurOp(msg)
 	{ 
@@ -105,13 +110,13 @@ class View extends BaseView{
 	updateHandCards(){ 
 		for (var i = 0;i<this.ui.handcard.length;++i){
 			var card = this.ui.handcard[i];
-			var value=this.model.player.handcard[i]; 
+			var value=this.model.myself.handcard[i]; 
 			if (value !=null && value !=undefined){
-				card.active=true;
                 var sign=card.getChildByName('sign');
                 let texture = QzmjResMgr.getInstance().getCardTextureByValue(value);
-                let frame = new cc.SpriteFrame(texture);
+                let frame = new cc.SpriteFrame(texture); 
 				sign.getComponent(cc.Sprite).spriteFrame = frame;  
+				card.active=true;
 			}
 			else
 			{
@@ -137,6 +142,18 @@ class View extends BaseView{
 				card.position=cc.p(pos.x,0);
 			}
 		} 
+	}
+	
+	//吃碰杠  牌的偏移
+	refreshCardsMove(){
+		if (this.model.myNodeX == 0){
+			this.model.myNodeX = this.node.x
+		}
+		let opcards = this.model.myself.opcards,
+			opcards_count = opcards.length;
+		if (opcards_count != 0){
+			this.node.x = this.model.myNodeX + (this.model.node_pox_gap * opcards_count);
+		}
 	}
 }
 //c, 控制
@@ -164,7 +181,8 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 			onSyncData:this.onSyncData,
 			onProcess:this.onProcess,
 			onOp:this.onOp,      
-			'http.reqRoomUsers':this.http_reqRoomUsers, 
+			'http.reqRoomUsers':this.http_reqRoomUsers,  
+            onGmOp:this.onGmOp,
         } 
 	}
 	
@@ -188,15 +206,42 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 	//end 
 	http_reqRoomUsers(msg)
 	{
+		//清空数据和牌
+		this.model.clear();
+		this.view.clear();
 		this.model.updateMyInfo();//更新我的信息
 	}
 	onEvent(msg)
 	{
-		// body    
-		if (msg.event==QzmjDef.event_chupai){ 
-			this.model.enabledOp();
-		}
+		// body  
+		if(this.model.myself.state!=QzmjDef.state_chupai)
+		{
+			return;
+		}   
+		this.model.enabledOp(); 
 	} 
+	//广播gm操作
+	onGmOp(msg)
+	{ 
+		switch(msg.optype)
+		{
+			case QzmjDef.gmop_changecard:{
+				if(msg.opseatid==RoomMgr.getInstance().getMySeatId())
+				{
+					console.log("updatecards1")
+					//自己换牌
+					this.view.updateHandCards();
+				}
+				if(msg.data.target==RoomMgr.getInstance().getMySeatId())
+				{
+					console.log("updatecards2")
+					//我的牌被别人换了
+					this.view.updateHandCards();
+				}
+			}
+			break;
+		}
+	}
 	onSyncData(  )
 	{
 		// body 
@@ -226,7 +271,13 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 			} 
 		}
 		else{
-			this.model.setCurOp(msg);  
+			this.model.setCurOp(msg); 
+			if (msg.opseatid == this.model.mySeatId){
+				if (op == QzmjDef.op_angang || op == QzmjDef.op_gang || op == QzmjDef.op_peng 
+					|| op == QzmjDef.op_chi){
+					this.view.refreshCardsMove();
+				}
+			}
 		}
 	}   
 	onProcess(msg){ 
@@ -260,7 +311,7 @@ export default class QzmjMyCardsCtrl extends BaseCtrl {
 				return;
 			}
 			if(this.model.cursel==index){
-				QzmjLogic.getInstance().playerOp(index);
+				QzmjLogic.getInstance().playerOp(QzmjDef.event_chupai,index);
 				this.model.disabledOp();
 				return;
 			}

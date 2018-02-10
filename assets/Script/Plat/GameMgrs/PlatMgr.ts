@@ -7,6 +7,7 @@ import BetCfg from "../CfgMgrs/BetCfg";
 import VerifyMgr from "./VerifyMgr";
 import BetMgr from "./BetMgr";
 import FrameMgr from "./FrameMgr";
+import LoginMgr from "./LoginMgr";
 export default class PlatMgr extends BaseMgr{
     loadprocess:any = null
     loadarr:Array<Function> = null
@@ -59,8 +60,11 @@ export default class PlatMgr extends BaseMgr{
     } 
     
     
-    enterPlat() { 
-        this.send_msg('connector.entryHandler.enterPlat');
+    enterPlat() {  
+        let msg={
+            token:LoginMgr.getInstance().getToken(),
+        } 
+        this.send_msg('connector.entryHandler.enterPlat',msg);
     } 
     dealConnectorEvent(ev_type,arg1,arg2){
         //ev_type=0表示推送

@@ -12,14 +12,15 @@ import GoodsCfg from "../../CfgMgrs/GoodsCfg";
 import UserMgr from "../../GameMgrs/UserMgr";
 import FrameMgr from "../../GameMgrs/FrameMgr";
 import RechargeMgr from "../../GameMgrs/RechargeMgr";
+import BehaviorMgr from "../../GameMgrs/BehaviorMgr";
 
 //MVC模块,
 const {ccclass, property} = cc._decorator;
 const STR_BtnIndex = '_btnIndex';
 const STR_ItemInfo = '_itemInfo';
 const BUY_TYPE = cc.Enum({
-    buyCoin:1,
-    buyGold:2
+    buyCoin:0,
+    buyGold:1
 })
 
 let ctrl : Prefab_shopCtrl;
@@ -33,8 +34,9 @@ class Model extends BaseModel{
     private _itemOffX:number = null
     private _itemOffY:number = null
     private _startPosX:number = null
-
+    private _clickType:number = null
     private _lineNum:number = null
+    private _addRecord = null
 	constructor()
 	{
         super();
@@ -43,6 +45,7 @@ class Model extends BaseModel{
         this._itemOffX = 80;
         this._itemOffY = 30;
         this._showItemNum = 0;
+        this._addRecord = new Array(false, false);
     }
     
     public getMoney3(){
@@ -69,7 +72,18 @@ class Model extends BaseModel{
         this._startPosX = startPosX;
     }
 
-
+    public setAddRecord(){
+        this._addRecord[this._clickType] = true
+    }
+    public getAddRecord(){
+        return this._addRecord[this._clickType]
+    }
+    public setBuyType(state){
+        this._clickType = state
+    }
+    public getBuyType(){
+        return this._clickType
+    }
     public getLineNum (){
         return this._lineNum
     }
@@ -91,6 +105,13 @@ class Model extends BaseModel{
         posY = -rowNum * (this._itemHeight + this._itemOffY) - this._itemHeight/2;
         return cc.p(posX, posY);
     }
+    public getBuyFramePos (){
+        let posX,
+            posY;
+        posX = 0;
+        posY = 0;
+        return cc.p(posX, posY);
+    }
     public getContentHeight (){
         let rowNum:number = Math.ceil(this._showItemNum/this._lineNum),
             contentH:number = rowNum * (this._itemHeight + this._itemOffY);
@@ -110,12 +131,18 @@ class View extends BaseView{
 	ui={
         //在这里声明ui
         node_leftBtns:null,                         //左边的按钮父节点
-        node_goodsList:null,                        //商品列表容器
+        node_goldList:null,                         //钻石列表容器
+        node_coinList:null,                         //金币列表容器
+        node_goldContent:null,                      //钻石容器
+        node_coinContent:null,                      //金币容器
         lab_money1:null,                            //金钱1
         lab_money2:null,                            //金钱2
         lab_money3:null,                            //金钱3
         prefab_item:null,                            //
-        prefab_itemDetail:null
+        prefab_itemDetail:null,
+        node_close:null,
+        node_btn_record:null,
+
 	};
     node:cc.Node=null;
 	constructor(model){
@@ -128,14 +155,18 @@ class View extends BaseView{
 	initUi()
 	{
         this.ui.node_leftBtns = ctrl.node_leftBtns;
-        this.ui.node_goodsList = ctrl.node_goodsList;
+        this.ui.node_goldList = ctrl.node_goldList;
+        this.ui.node_coinList = ctrl.node_coinList;
+        this.ui.node_goldContent = ctrl.node_goldContent;
+        this.ui.node_coinContent = ctrl.node_coinContent;
         this.ui.lab_money1 = ctrl.lab_money1;
         this.ui.lab_money2 = ctrl.lab_money2;
         this.ui.lab_money3 = ctrl.lab_money3;
         this.ui.prefab_item = ctrl.prefab_item;
         this.ui.prefab_itemDetail = ctrl.prefab_itemDetail;
-
-        this.model.setStartPosX(-this.ui.node_goodsList.width/2);
+        this.ui.node_close = ctrl.node_close;
+        this.ui.node_btn_record = ctrl.node_btn_record;
+        this.model.setStartPosX(-this.ui.node_goldContent.width/2);
     }
 
     updateMyInfo()
@@ -173,7 +204,7 @@ class View extends BaseView{
     }
 
     //显示物品详情界面
-    private showItemDetail (){
+    private showItemDetail (call_exit){
         let curNode = cc.instantiate(this.ui.prefab_itemDetail);
         curNode.parent = this.node;
         let curComp:Prefab_shopDetailCtrl = curNode.getComponent(this.ui.prefab_itemDetail.name);
@@ -184,25 +215,32 @@ class View extends BaseView{
 
     public addItem (){
         let curNode:cc.Node = cc.instantiate(this.ui.prefab_item);
-        curNode.parent = this.ui.node_goodsList;
+        if (this.model.getBuyType() == BUY_TYPE.buyGold)
+            curNode.parent = this.ui.node_goldContent;
+        else if (this.model.getBuyType()  == BUY_TYPE.buyCoin)
+            curNode.parent = this.ui.node_coinContent;
         this.model.initSize(curNode);
         curNode.position = this.model.getItemPos();
         this.model.addItem();
-        this._resetContentSize();
+        this._resetContentSize(curNode.parent);
         return curNode.getComponent(this.ui.prefab_item.name);
     }
 
-    public clearItems(){
-        let itemList = this.ui.node_goodsList.children;
-        for(let i = 0; i < itemList.length; i ++){
-            itemList[i].destroy();
-        }
-        this.model.clearItems();
+    private _resetContentSize (node){
+        let contentH = this.model.getContentHeight();
+        if (this.model.getBuyType()  == BUY_TYPE.buyGold)
+            node.height = contentH;
+        else if (this.model.getBuyType()  == BUY_TYPE.buyCoin)
+            node.height = contentH;
     }
 
-    private _resetContentSize (){
-        let contentH = this.model.getContentHeight();
-        this.ui.node_goodsList.height = contentH;
+    public tableContentCrtl (){
+        this.ui.node_goldList.active = false;
+        this.ui.node_coinList.active = false;
+        if (this.model.getBuyType()  == BUY_TYPE.buyGold)
+            this.ui.node_goldList.active = true;
+        else if (this.model.getBuyType()  == BUY_TYPE.buyCoin)
+            this.ui.node_coinList.active = true;
     }
 }
 //c, 控制
@@ -226,7 +264,16 @@ export default class Prefab_shopCtrl extends BaseCtrl {
     node_btn_record:cc.Node = null
 
     @property(cc.Node)
-    node_goodsList:cc.Node = null
+    node_goldList:cc.Node = null
+
+    @property(cc.Node)
+    node_coinList:cc.Node = null
+
+    @property(cc.Node)
+    node_goldContent:cc.Node = null
+
+    @property(cc.Node)
+    node_coinContent:cc.Node = null
 
     @property(cc.Prefab)
     prefab_item:cc.Prefab = null
@@ -239,8 +286,6 @@ export default class Prefab_shopCtrl extends BaseCtrl {
 
 	//声明ui组件end
 	//这是ui组件的map,将ui和控制器或试图普通变量分离
-
-    private _clickType:number = null
 
 	onLoad (){
 		//创建mvc模式中模型和视图
@@ -267,14 +312,16 @@ export default class Prefab_shopCtrl extends BaseCtrl {
 	//绑定操作的回调
 	connectUi()
 	{
-        this.connect(G_UiType.image, this.node_btn_record, this.node_btn_record_cb, '显示兑换记录')
-        this.connect(G_UiType.image, this.node_close, this.node_close_cb, '点击关闭')
+        this.connect(G_UiType.image, this.ui.node_btn_record, this.node_btn_record_cb, '显示兑换记录')
+        this.connect(G_UiType.image, this.ui.node_close, this.node_close_cb, '点击关闭')
         let btns = this.node_leftBtns.children,
             curBtn;
         for(let i = 0; i < btns.length; i ++){
             curBtn = btns[i];
-            curBtn[STR_BtnIndex] = i;
-            this.connect(G_UiType.image, curBtn, this.node_leftBtns_cb, '左边的切换按钮:btn_'+i)
+            this.connect(G_UiType.image, curBtn, (node, event)=>{
+                var index = i;
+                this.node_leftBtns_cb(index, node);
+            }, '左边的切换按钮:btn_'+i)
         }
 	}
 	start () {
@@ -340,42 +387,50 @@ export default class Prefab_shopCtrl extends BaseCtrl {
     //按钮或任何控件操作的回调begin
 
     public buyGold(){
-        this._clickType = BUY_TYPE.buyGold;
+        this.model.setBuyType(BUY_TYPE.buyGold);
+        this.view.tableContentCrtl();
+        this.view.setLeftClickIndex(2);
+        if (this.model.getAddRecord() == true)return;
+        console.log('初始化钻石列表');
         //钻石充值
         let infoList = GoodsCfg.getInstance().getGoldCfg();
         let itemNum,
             info,
             curItemComp:Prefab_shopItemCtrl;
-        this.view.clearItems();
+        this.model.clearItems();
         itemNum = infoList.length;
         for(let i = 0; i < itemNum; i ++){
-            info = infoList[i];
-            info.strType = 'gold';
+            BehaviorMgr.getInstance().setGoodsItemData(i, "gold");
             curItemComp = this.view.addItem();
-            curItemComp.setInfo(i, info);
-            curItemComp.node[STR_ItemInfo] = info;
-            this.connect(G_UiType.image, curItemComp.node, this._onClick_item, '选择商品');
+            this.connect(G_UiType.image, curItemComp.node, (node, event)=>{
+                var index = i;
+                this._onClick_item(index, "gold", node, event)
+            }, '选择商品');
         }
-        this.view.setLeftClickIndex(2);
+        this.model.setAddRecord();
     }
     public buyCoin(){
-        this._clickType = BUY_TYPE.buyCoin;
-        let infoList = GoodsCfg.getInstance().getCoinCfg();
+        this.model.setBuyType(BUY_TYPE.buyCoin);
+        this.view.tableContentCrtl();
+        this.view.setLeftClickIndex(1);
+        if (this.model.getAddRecord() == true)return;
+        console.log('初始化金币列表');
         //换金币
+        let infoList = GoodsCfg.getInstance().getCoinCfg();
         let itemNum,
             info,
             curItemComp:Prefab_shopItemCtrl;
-        this.view.clearItems();
+        this.model.clearItems();
         itemNum = infoList.length;
         for(let i = 0; i < itemNum; i ++){
-            info = infoList[i]
-            info.strType = 'coin';
+            BehaviorMgr.getInstance().setGoodsItemData(i, 'coin');
             curItemComp = this.view.addItem();
-            curItemComp.setInfo(i, info);
-            curItemComp.node[STR_ItemInfo] = info;
-            this.connect(G_UiType.image, curItemComp.node, this._onClick_item, '选择商品');
+            this.connect(G_UiType.image, curItemComp.node, (node, event)=>{
+                var index = i;
+                this._onClick_item(index, "coin", node, event)
+            }, '选择商品');
         }
-        this.view.setLeftClickIndex(1);
+        this.model.setAddRecord();
     }
     
     //点击兑换记录
@@ -388,8 +443,7 @@ export default class Prefab_shopCtrl extends BaseCtrl {
         this.finish();
     }
     //点击左边按钮
-    private node_leftBtns_cb(node){
-        let index = node[STR_BtnIndex];
+    private node_leftBtns_cb(index, node){
         console.log('node_leftBtns_cb', index);
         switch(index){
             case 0:
@@ -411,25 +465,13 @@ export default class Prefab_shopCtrl extends BaseCtrl {
         }
         this.view.setLeftClickIndex(index);
     }
-    private _onClick_item(node, evnet){
-        let info = node[STR_ItemInfo];
-        console.log('_onClick_item :: ', info)
-        switch(this._clickType){
-            case BUY_TYPE.buyCoin:
-                //购买金币
-                if(UserMgr.getInstance().getMyInfo().gold >= info.price){
-                    RechargeMgr.getInstance().reqBuyGoods(3, info.id) 
-                }else{
-                    FrameMgr.getInstance().showMsgBox('钻石不足', ()=>{
-                        this.buyGold();
-                    });
-                }
-                break
-            case BUY_TYPE.buyGold:
-                //钻石
-                RechargeMgr.getInstance().reqBill(info.id) 
-                break
-        }
+    private _onClick_item(_id, _type, node, evnet){
+        //设置该控件按钮取消监听
+        //this.view.setNodeEvents(false);
+        console.log('_id:' +_id + "+_type:" +_type);
+        BehaviorMgr.getInstance().setGoodsBuyData(_id, _type)
+        //钻石
+        this.start_sub_module(G_MODULE.ShopDetail);
     }
 
 	//end

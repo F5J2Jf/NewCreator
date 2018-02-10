@@ -105,8 +105,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 25,
-      "height": 26
+      "width": 16,
+      "height": 16
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -114,8 +114,8 @@
     "_scaleY": 2,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 22,
-      "y": 34
+      "x": 13,
+      "y": 98
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -136,7 +136,7 @@
       "__uuid__": "8209d289-3d99-4544-a6ec-c8b0c6b4873f"
     },
     "_type": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -219,8 +219,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 25,
-      "height": 26
+      "width": 16,
+      "height": 16
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -228,8 +228,8 @@
     "_scaleY": 2,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": -12,
+      "y": 92
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -250,7 +250,7 @@
       "__uuid__": "8209d289-3d99-4544-a6ec-c8b0c6b4873f"
     },
     "_type": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -305,6 +305,9 @@
     "_enabled": true,
     "Dice1": {
       "__id__": 2
+    },
+    "DiceList": {
+      "__uuid__": "6c625750-0a02-40b8-93f1-a4d997e26b68"
     },
     "Dice2": {
       "__id__": 6

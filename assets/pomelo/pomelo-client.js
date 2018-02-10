@@ -267,8 +267,12 @@
   };
 
   var processMessage = function(pomelo, msg) { 
-    
-    msgcb(msg.route, msg.body);
+    let code=null;
+    if(msg.body)
+    {
+      code=msg.body.code;
+    }
+    msgcb(msg.route,code, msg.body);
     return;
   };
 

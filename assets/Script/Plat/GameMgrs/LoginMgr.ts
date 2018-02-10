@@ -2,6 +2,7 @@ import BaseMgr from "../Libs/BaseMgr";
 import GameNet from "../NetCenter/GameNet";
 import NetNotify from "../NetCenter/NetNotify";
 import PlatMgr from "./PlatMgr";
+import ServerMgr from "../../AppStart/AppMgrs/ServerMgr";
   
 enum ServerType {
 	server_gate=1,
@@ -15,6 +16,7 @@ export default class LoginMgr extends BaseMgr{
     private m_servertype:ServerType;
     private _uid=null;
     private _token;
+    private serverCfg=null
     
     routes:{} = null
 
@@ -25,7 +27,8 @@ export default class LoginMgr extends BaseMgr{
             'http.reqLogin' : this.http_reqLogin,
             'gate.entry.req' : this.gate_entry_req,
         }
-        GameNet.getInstance().setWebHost("http://192.168.1.190:3000/gamereq") 
+        this.serverCfg=ServerMgr.getInstance().getServerCfg();
+        GameNet.getInstance().setWebHost(`http://${this.serverCfg.platSvrHost}:${this.serverCfg.platSvrPort}/gamereq`) 
     }
     getUid()
     {
@@ -61,8 +64,7 @@ export default class LoginMgr extends BaseMgr{
             break;
         }
     }
-    connectcb(event_type,event){ 
-        console.log("servertype=",this.m_servertype,event_type)
+    connectcb(event_type,event){  
         switch(this.m_servertype)
         {
             case ServerType.server_gate: 
@@ -98,12 +100,12 @@ export default class LoginMgr extends BaseMgr{
         this.m_servertype=ServerType.server_gate
         this._uid=msg.uid;
         this._token=msg.token; 
-        GameNet.getInstance().setUid(this._uid)
+        GameNet.getInstance().setLoginInfo(this._uid,this._token)
         //登录成功后连接gate
         GameNet.getInstance().connect(msg.host,msg.port,this.connectcb.bind(this));
     }
     //登录nodejs服回调
-    http_reqLogin (msg){
+    http_reqLogin (msg){ 
         this.loginPomelo(msg)
     }
     
@@ -113,14 +115,18 @@ export default class LoginMgr extends BaseMgr{
         this.loginPomelo(msg)
     }
     //请求登录nodejs服
-    reqLogin (msg){
+    reqLogin (msg){ 
+        msg.gameSvrTag=this.serverCfg.gameSvrTag 
         this.send_msg('http.reqLogin',msg)
     }
     //请求注册nodejs服
-    reqRegister (msg){
+    reqRegister (msg){ 
+        msg.gameSvrTag=this.serverCfg.gameSvrTag 
         this.send_msg('http.reqRegister',msg) 
     }
- 
+    getToken(){
+        return this._token;
+    }
     //单例处理
     private static _instance:LoginMgr;
     public static getInstance ():LoginMgr{
